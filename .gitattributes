@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.pdf binary
+*.png binary
+
+# Preserve exact source and evidence bytes used by SHA-256 verification.
+*.als -text
+telecommunications_protocol/results/** -text

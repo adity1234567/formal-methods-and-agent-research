@@ -1,0 +1,85 @@
+<alloy builddate="2025-01-09T08:17:18.350Z">
+
+<instance bitwidth="5" maxseq="4" mintrace="-1" maxtrace="-1" command="Run ShowPendingPollCanStutter for 3 but 5 int, 4 seq, exactly 2 State expect 1" filename="" tracelength="1" looplength="1">
+
+<sig label="seq/Int" ID="0" parentID="1" builtin="yes">
+</sig>
+
+<sig label="Int" ID="1" parentID="2" builtin="yes">
+</sig>
+
+<sig label="String" ID="3" parentID="2" builtin="yes">
+</sig>
+
+<sig label="this/Message" ID="4" parentID="2">
+   <atom label="Message$0"/>
+   <atom label="Message$1"/>
+   <atom label="Message$2"/>
+</sig>
+
+<sig label="this/SPC" ID="5" parentID="2">
+   <atom label="SPC$0"/>
+   <atom label="SPC$1"/>
+</sig>
+
+<sig label="this/State" ID="6" parentID="2">
+   <atom label="State$0"/>
+   <atom label="State$1"/>
+</sig>
+
+<field label="route" ID="7" parentID="6">
+   <tuple> <atom label="State$0"/> <atom label="0"/> <atom label="SPC$0"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="1"/> <atom label="SPC$1"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="0"/> <atom label="SPC$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="1"/> <atom label="SPC$1"/> </tuple>
+   <types> <type ID="6"/> <type ID="0"/> <type ID="5"/> </types>
+</field>
+
+<field label="rec" ID="8" parentID="6">
+   <tuple> <atom label="State$0"/> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$0"/> <atom label="1"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$0"/> <atom label="2"/> <atom label="Message$1"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$1"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$1"/> <atom label="1"/> <atom label="Message$1"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$0"/> <atom label="1"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$0"/> <atom label="2"/> <atom label="Message$1"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$1"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$1"/> <atom label="1"/> <atom label="Message$1"/> </tuple>
+   <types> <type ID="6"/> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="ins" ID="9" parentID="6">
+   <tuple> <atom label="State$0"/> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <types> <type ID="6"/> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="sent" ID="10" parentID="6">
+   <tuple> <atom label="State$0"/> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$0"/> <atom label="1"/> <atom label="Message$1"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$1"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$0"/> <atom label="SPC$1"/> <atom label="1"/> <atom label="Message$1"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$0"/> <atom label="1"/> <atom label="Message$1"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$1"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <tuple> <atom label="State$1"/> <atom label="SPC$1"/> <atom label="1"/> <atom label="Message$1"/> </tuple>
+   <types> <type ID="6"/> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<sig label="univ" ID="2" builtin="yes">
+</sig>
+
+<skolem label="$ShowPendingPollCanStutter_a" ID="11">
+   <tuple> <atom label="State$0"/> </tuple>
+   <types> <type ID="6"/> </types>
+</skolem>
+
+<skolem label="$ShowPendingPollCanStutter_b" ID="12">
+   <tuple> <atom label="State$1"/> </tuple>
+   <types> <type ID="6"/> </types>
+</skolem>
+
+</instance>
+
+</alloy>

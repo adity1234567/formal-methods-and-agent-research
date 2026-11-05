@@ -1,0 +1,39 @@
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by kodkod.engine.satlab.SATFactory in an unnamed module
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+00. check InitialIsValid           0       UNSAT
+01. check RetrieveIsValid          0       UNSAT
+02. check TransmitPreservesInvariant     0       UNSAT
+03. check ReceivePreservesInvariant     0       UNSAT
+04. check DaemonPreservesInvariant     0       UNSAT
+05. check InsertionPreservesInvariant     0       UNSAT
+06. check TransmitRefinesExternal     0       UNSAT
+07. check ReceiveRefinesExternal     0       UNSAT
+08. check DaemonIsInvisible        0       UNSAT
+09. check InsertionIsInvisible     0       UNSAT
+10. check BrokenReceiveWouldPreserveInvariant     0    1/1     SAT
+11. run   ShowTransmit             0    1/1     SAT
+12. run   ShowReceive              0    1/1     SAT
+13. run   ShowDaemon               0    1/1     SAT
+14. run   ShowInsertionWithTraffic     0    1/1     SAT
+15. run   ShowRepeatedMessageValue     0    1/1     SAT
+16. run   ShowTwoMessageDelivery     0    1/1     SAT
+17. run   ShowPendingPollCanStutter     0    1/1     SAT
+c last restart ## conflicts  :  91 624 
+c last restart ## conflicts  :  1 816 
+c last restart ## conflicts  :  0 1829 
+c last restart ## conflicts  :  0 1734 
+c last restart ## conflicts  :  1 2158 
+c last restart ## conflicts  :  0 2110 
+c last restart ## conflicts  :  107 955 
+c last restart ## conflicts  :  1 956 
+c last restart ## conflicts  :  54 1057 
+c last restart ## conflicts  :  0 1182 
+c last restart ## conflicts  :  2 358 
+c last restart ## conflicts  :  1 404 
+c last restart ## conflicts  :  24 925 
+c last restart ## conflicts  :  1 916 
+c last restart ## conflicts  :  53 1235 
+c last restart ## conflicts  :  0 1341 

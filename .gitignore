@@ -1,0 +1,24 @@
+# Local working files and Python caches
+/tmp/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Duplicate delivery archive and external software
+/telecommunications_project.zip
+/telecommunications_protocol/tools/*.jar
+
+# Third-party textbook and chapter reproductions (source links are documented)
+/telecommunications_protocol/references/*.pdf
+/telecommunications_protocol/references/*.png
+/telecommunications_protocol/references/chapter20_extracted.txt
+
+# Editor and operating-system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

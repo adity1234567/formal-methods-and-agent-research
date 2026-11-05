@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+    "-jar",
+    "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+    "exec",
+    "-c",
+    "*",
+    "-n",
+    "-s",
+    "glucose",
+    "-t",
+    "xml",
+    "-o",
+    "D:\\formal method\\telecommunications_protocol\\results\\run-20261103-152340-96e1de",
+    "D:\\formal method\\telecommunications_protocol\\telecommunications.als"
+  ],
+  "process_exit_code": 0,
+  "solver": "glucose",
+  "alloy_version": "6.2.0",
+  "no_overflow": true,
+  "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+  "model_sha256": "532925f481b457c44e0211a76709434243af166f450846dc4d0b4c96443e8472",
+  "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d"
+}

@@ -16,6 +16,8 @@ This repository contains two parts of a coursework and research workspace:
 | Executable model | [telecommunications.als](telecommunications_protocol/telecommunications.als) |
 | Presentation outline and speaking notes | [Presentation notes](telecommunications_protocol/presentation_notes.md) |
 | Current verification report | [Verification summary](telecommunications_protocol/results/verification_summary.md) |
+| Larger-network checks and measured limits | [Scaling results](telecommunications_protocol/results/scaling_summary.md) |
+| Scalable representations and correspondence | [Scaling design](telecommunications_protocol/scaling_design.md) |
 | Guide to current and historical runs | [Results guide](telecommunications_protocol/results/README.md) |
 | Completed project review | [Audit report](telecommunications_protocol/audit_report.md) |
 | Research feedback and dataset availability | [Research PDF](output/pdf/research_feedback_and_datasets.pdf) |
@@ -47,6 +49,27 @@ and updates the verification reports. For the pure Java solver, use
 The saved evidence supports the stated finite scopes. It is not an unbounded
 proof or a complete implementation of SS7. Consult the project README and
 verification summary for the model's assumptions and limitations.
+
+## Analyse larger networks
+
+The original sequence-route model is retained as the reference. Additional
+representations separate the point count from the message-history bound and
+support larger scopes. The [scaling report](telecommunications_protocol/results/scaling_summary.md)
+states which property checks and exact-size examples actually completed, with
+timeouts and failed attempts retained. A large witness is not a completed set
+of safety checks.
+
+From `telecommunications_protocol`:
+
+```shell
+python scale_verify.py --model telecommunications_large.als --points 10 --history-bound 2 --commands all --solver glucose --timeout 180
+python check_correspondence.py --harness scaling_large_correspondence.als --timeout 90
+python summarize_scaling.py
+```
+
+The scaling tools write independent evidence under `scale-results/`. Read the
+[design qualifications](telecommunications_protocol/scaling_design.md) before
+comparing the ordered active-route models with the fixed-route specialization.
 
 ## Regenerate the research PDF
 

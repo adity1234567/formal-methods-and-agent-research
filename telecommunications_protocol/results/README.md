@@ -22,3 +22,16 @@ stopped. The oldest completed run is also retained as the input fixture for
 A SAT result is expected for the seven example runs and the deliberately
 broken receive check. UNSAT is expected for the ten checks of the correct model.
 These results apply to the finite scopes shown in the summary.
+
+## Scaling extension
+
+[scaling_summary.md](scaling_summary.md) consolidates the later larger-network
+experiments. Their raw evidence lives in `../scale-results/`, independently of
+the baseline `run-*` directories above. Each scaling command has a frozen
+source, resource deadline, execution status and validated Analyzer outcome.
+The report also links the bounded correspondence checks between representations.
+
+A timeout, interruption or translation failure is UNKNOWN. Counts of completed
+property checks are separate from exact-size traffic and operation witnesses.
+The 1,000-point fixed-route experiments use a much shorter traffic history
+than the reference checks; read all bounds alongside every size claim.

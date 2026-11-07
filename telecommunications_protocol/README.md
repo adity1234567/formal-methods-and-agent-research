@@ -9,6 +9,8 @@ pages 321–329. Prepared 3 November 2026.
 - `telecommunications.als`: the executable Alloy model and its analysis commands.
 - `presentation_notes.md`: slide outline, speaking notes, demonstration, and viva preparation.
 - `results/verification_summary.md`: actual Analyzer results, scopes, and limitations.
+- `results/scaling_summary.md`: larger-network checks, exact-size witnesses, timeouts, and resource limits.
+- `scaling_design.md`: scalable representations, bounded correspondence, and their qualifications.
 - `results/example_instances.md`: readable delivery and bug examples extracted from the saved XML instances.
 - `audit_report.md`: completed review, corrections, and validation evidence.
 - `verify.py` / `verify.ps1`: repeat the analysis and save its evidence.
@@ -212,3 +214,68 @@ Alloy downloads and distribution notes:
 The installed JAR's `help exec` output is the reference for its command-line
 options. The source book remains copyright Woodcock and Davies; this package's
 model and teaching notes are a new translation and explanation.
+
+## Larger-network analysis
+
+The original four-point analysis remains a reproducible reference. The scaling
+extension supplies three additional models:
+
+| Model | Network representation | History representation | Scope of use |
+|---|---|---|---|
+| `telecommunications_scalable.als` | Active subset of an ordered point pool | Original state-indexed sequences | Dynamic routes, including insertion, with multi-snapshot examples |
+| `telecommunications_large.als` | Active subset of an ordered point pool | Six history fields for Before/After slots | State and individual-transition checks with lower relation arity |
+| `telecommunications_fixed_route.als` | Every pool point belongs to one fixed route | Before/After slots | Exact-size fixed-route checks, with insertion excluded |
+
+The point bound and history bound are independent in these models. Fixed pool
+positions qualify insertion enabledness, and the two-slot encodings do not
+provide the original three/seven-snapshot examples. These are explicit
+representation choices, described and compared in [scaling_design.md](scaling_design.md).
+
+The [consolidated scaling report](results/scaling_summary.md) is the authority
+for completed results. It distinguishes full property coverage, successful
+large witnesses, and UNKNOWN results caused by timeouts or translation limits.
+Results with different history bounds are not interchangeable.
+
+### Run a scaling suite
+
+```powershell
+python .\scale_verify.py --model telecommunications_large.als --points 10 --history-bound 2 --commands all --solver glucose --timeout 180 --heap-mb 2048
+```
+
+Every command runs in a separate Java process with an independent deadline.
+The suite freezes source bytes and saves the generated command, hashes, log,
+receipt, XML witnesses, completion status and elapsed wall time. The heap cap
+does not measure total process memory. The default output is `scale-results/`.
+The baseline verification summary and example tables retain their own evidence.
+
+Use `--points 6 8 10` for several sizes, `--commands checks` for the property
+checks available in the selected model, or list individual command names.
+`--dry-run` writes the proposed scopes without launching Java. The original
+sequence model is selected when `--model` is omitted; its sequence bound still
+grows with the network size.
+
+For the narrowly bounded fixed-route 1,000-point traffic witness:
+
+```powershell
+python .\scale_verify.py --model telecommunications_fixed_route.als --points 1000 --messages 1 --history-bound 1 --commands ShowFullRouteWithTraffic --solver glucose --timeout 120
+```
+
+This demonstrates one possible full-size traffic state. It does not claim all
+properties at 1,000 points or represent multi-message ordering with that
+one-entry history bound. Consult the report for the corresponding check and
+operation-witness results.
+
+### Compare representations and revalidate evidence
+
+```powershell
+python .\check_correspondence.py --timeout 60
+python .\check_correspondence.py --harness scaling_large_correspondence.als --timeout 90
+python -m unittest -v test_verification test_scaling test_correspondence
+python .\summarize_scaling.py
+```
+
+Run the consolidator after benchmark processes finish. It revalidates saved
+per-command evidence and groups completed checks only when the source hash and
+network/history/message/integer bounds agree. The correspondence harnesses
+compare representations at three points and remain bounded evidence. No
+scaling result establishes eventual delivery or arbitrary-size correctness.

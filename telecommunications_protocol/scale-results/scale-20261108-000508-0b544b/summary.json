@@ -1,0 +1,76 @@
+{
+  "format_version": 1,
+  "started_at": "2026-11-08T00:05:08+06:00",
+  "original_sha256": "05cb357750fabcac8b6ec7e5d2f8ddbd1d74d6896856162bd48f507b87d2dba9",
+  "model": "D:\\formal method\\telecommunications_protocol\\telecommunications_scalable.als",
+  "representation": "ordered",
+  "points": [
+    8
+  ],
+  "commands": [
+    "DaemonIsInvisible"
+  ],
+  "solver": "glucose",
+  "timeout_seconds": 300.0,
+  "jvm_heap_cap_mb": 2048,
+  "runs": [
+    {
+      "format_version": 1,
+      "command": "DaemonIsInvisible",
+      "command_type": "check",
+      "expected": "UNSAT",
+      "command_source": "check DaemonIsInvisible for 4 but 8 SPC, 4 Message, exactly 2 State, 5 Int, 4 seq",
+      "points_bound": 8,
+      "message_values_bound": 4,
+      "sequence_bound": 4,
+      "integer_bitwidth": 5,
+      "integer_width_rationale": "Ordered SPC atoms do not use integer route positions or cardinality. History length is 4; signed range covers local concatenation up to 8 and history length+1. The model's telescoping offset uses history lengths, not point count.",
+      "states": 2,
+      "representation": "ordered",
+      "exact_route_witness": false,
+      "status": "completed",
+      "started_at": "2026-11-08T00:05:08+06:00",
+      "solver": "glucose",
+      "no_overflow": true,
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "0",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\scale-20261108-000508-0b544b\\points-8\\DaemonIsInvisible\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\scale-20261108-000508-0b544b\\points-8\\DaemonIsInvisible\\telecommunications.als"
+      ],
+      "timeout_seconds": 300.0,
+      "jvm_heap_cap_mb": 2048,
+      "peak_process_memory_bytes": null,
+      "memory_note": "Heap cap is configured, not measured peak process memory; native solver allocation is additional.",
+      "model_sha256": "f7e98fb43275361123b1c70c9116ad641e566a261b4ca81104d80e95105f9191",
+      "original_sha256": "05cb357750fabcac8b6ec7e5d2f8ddbd1d74d6896856162bd48f507b87d2dba9",
+      "original_source_file": "..\\..\\original-model.als",
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "process_exit_code": 0,
+      "elapsed_seconds": 214.057,
+      "finished_at": "2026-11-08T00:08:42+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": [],
+        "active_route_lengths": null
+      }
+    }
+  ],
+  "planned_run_count": 1,
+  "recorded_run_count": 1,
+  "all_expectations_validated": true,
+  "finished_at": "2026-11-08T00:08:43+06:00",
+  "dry_run": false
+}

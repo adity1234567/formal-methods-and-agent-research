@@ -1,0 +1,608 @@
+{
+  "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+  "solver": "glucose",
+  "timeout_seconds": 60.0,
+  "harness": "scaling_large_correspondence.als",
+  "jvm_heap_cap_mb": 2048,
+  "source_sha256": {
+    "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+    "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+    "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+  },
+  "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+  "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+  "alloy_version": "6.2.0",
+  "status": "completed",
+  "started_at": "2026-11-07T23:55:07+06:00",
+  "commands": [
+    "SectionInvariantsCorrespond",
+    "InitialStatesCorrespond",
+    "RetrieveObservationsCorrespond",
+    "TransmitEffectsCorrespond",
+    "ReceiveEffectsCorrespond",
+    "DaemonEffectsCorrespond",
+    "InsertionEffectsCorrespond",
+    "ShowCorrespondingTransmit",
+    "ShowCorrespondingInsertion",
+    "ShowCorrespondingReceive",
+    "ShowCorrespondingDaemon"
+  ],
+  "results": [
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "SectionInvariantsCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "SectionInvariantsCorrespond",
+        "expected": "UNSAT",
+        "source": "check SectionInvariantsCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "SectionInvariantsCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\SectionInvariantsCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:55:07+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 6.947,
+      "finished_at": "2026-11-07T23:55:13+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "InitialStatesCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "InitialStatesCorrespond",
+        "expected": "UNSAT",
+        "source": "check InitialStatesCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "InitialStatesCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\InitialStatesCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:55:14+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 2.499,
+      "finished_at": "2026-11-07T23:55:16+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "RetrieveObservationsCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "RetrieveObservationsCorrespond",
+        "expected": "UNSAT",
+        "source": "check RetrieveObservationsCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "RetrieveObservationsCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\RetrieveObservationsCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:55:16+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 5.983,
+      "finished_at": "2026-11-07T23:55:22+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "TransmitEffectsCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "TransmitEffectsCorrespond",
+        "expected": "UNSAT",
+        "source": "check TransmitEffectsCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "TransmitEffectsCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\TransmitEffectsCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:55:22+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 2.923,
+      "finished_at": "2026-11-07T23:55:25+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "ReceiveEffectsCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "ReceiveEffectsCorrespond",
+        "expected": "UNSAT",
+        "source": "check ReceiveEffectsCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "ReceiveEffectsCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\ReceiveEffectsCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:55:26+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 3.708,
+      "finished_at": "2026-11-07T23:55:29+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "DaemonEffectsCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "DaemonEffectsCorrespond",
+        "expected": "UNSAT",
+        "source": "check DaemonEffectsCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "DaemonEffectsCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\DaemonEffectsCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "timed_out",
+      "started_at": "2026-11-07T23:55:29+06:00",
+      "process_exit_code": 1,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 60.142,
+      "finished_at": "2026-11-07T23:56:30+06:00",
+      "validation": {
+        "validated": false,
+        "observed": null,
+        "errors": [
+          "Execution not completed successfully: timed_out"
+        ]
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "InsertionEffectsCorrespond",
+      "declaration": {
+        "type": "check",
+        "name": "InsertionEffectsCorrespond",
+        "expected": "UNSAT",
+        "source": "check InsertionEffectsCorrespond for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "InsertionEffectsCorrespond",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\InsertionEffectsCorrespond\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:56:30+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 44.481,
+      "finished_at": "2026-11-07T23:57:14+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "UNSAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "ShowCorrespondingTransmit",
+      "declaration": {
+        "type": "run",
+        "name": "ShowCorrespondingTransmit",
+        "expected": "SAT",
+        "source": "run ShowCorrespondingTransmit for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "ShowCorrespondingTransmit",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\ShowCorrespondingTransmit\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:57:14+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 14.149,
+      "finished_at": "2026-11-07T23:57:28+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "SAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "ShowCorrespondingInsertion",
+      "declaration": {
+        "type": "run",
+        "name": "ShowCorrespondingInsertion",
+        "expected": "SAT",
+        "source": "run ShowCorrespondingInsertion for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "ShowCorrespondingInsertion",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\ShowCorrespondingInsertion\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:57:29+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 4.744,
+      "finished_at": "2026-11-07T23:57:33+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "SAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "ShowCorrespondingReceive",
+      "declaration": {
+        "type": "run",
+        "name": "ShowCorrespondingReceive",
+        "expected": "SAT",
+        "source": "run ShowCorrespondingReceive for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "ShowCorrespondingReceive",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\ShowCorrespondingReceive\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:57:34+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 2.667,
+      "finished_at": "2026-11-07T23:57:36+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "SAT",
+        "errors": []
+      }
+    },
+    {
+      "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+      "solver": "glucose",
+      "timeout_seconds": 60.0,
+      "harness": "scaling_large_correspondence.als",
+      "jvm_heap_cap_mb": 2048,
+      "source_sha256": {
+        "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+        "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+        "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+      },
+      "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+      "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+      "alloy_version": "6.2.0",
+      "format_version": 1,
+      "command": "ShowCorrespondingDaemon",
+      "declaration": {
+        "type": "run",
+        "name": "ShowCorrespondingDaemon",
+        "expected": "SAT",
+        "source": "run ShowCorrespondingDaemon for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+      },
+      "argv": [
+        "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+        "-Xmx2048m",
+        "-jar",
+        "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+        "exec",
+        "-c",
+        "ShowCorrespondingDaemon",
+        "-n",
+        "-s",
+        "glucose",
+        "-t",
+        "xml",
+        "-o",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\ShowCorrespondingDaemon\\alloy",
+        "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+      ],
+      "status": "completed",
+      "started_at": "2026-11-07T23:57:36+06:00",
+      "process_exit_code": 0,
+      "no_overflow": true,
+      "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+      "elapsed_seconds": 3.024,
+      "finished_at": "2026-11-07T23:57:39+06:00",
+      "validation": {
+        "validated": true,
+        "observed": "SAT",
+        "errors": []
+      }
+    }
+  ],
+  "all_expectations_validated": false,
+  "finished_at": "2026-11-07T23:57:40+06:00"
+}

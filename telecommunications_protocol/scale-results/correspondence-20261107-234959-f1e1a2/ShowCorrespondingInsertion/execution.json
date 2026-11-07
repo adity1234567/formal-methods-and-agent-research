@@ -1,0 +1,51 @@
+{
+  "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+  "solver": "glucose",
+  "timeout_seconds": 60.0,
+  "jvm_heap_cap_mb": 2048,
+  "source_sha256": {
+    "scaling_correspondence.als": "8b12ff9645637d1eea3a8c0275cc15d74626eadd687bd03eadf9b9e21ff32b3d",
+    "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+    "telecommunications_scalable.als": "05cb357750fabcac8b6ec7e5d2f8ddbd1d74d6896856162bd48f507b87d2dba9"
+  },
+  "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+  "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+  "alloy_version": "6.2.0",
+  "format_version": 1,
+  "command": "ShowCorrespondingInsertion",
+  "declaration": {
+    "type": "run",
+    "name": "ShowCorrespondingInsertion",
+    "expected": "SAT",
+    "source": "run ShowCorrespondingInsertion for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+  },
+  "argv": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+    "-Xmx2048m",
+    "-jar",
+    "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+    "exec",
+    "-c",
+    "ShowCorrespondingInsertion",
+    "-n",
+    "-s",
+    "glucose",
+    "-t",
+    "xml",
+    "-o",
+    "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-20261107-234959-f1e1a2\\ShowCorrespondingInsertion\\alloy",
+    "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-20261107-234959-f1e1a2\\sources\\scaling_correspondence.als"
+  ],
+  "status": "completed",
+  "started_at": "2026-11-07T23:51:00+06:00",
+  "process_exit_code": 0,
+  "no_overflow": true,
+  "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+  "elapsed_seconds": 4.911,
+  "finished_at": "2026-11-07T23:51:04+06:00",
+  "validation": {
+    "validated": true,
+    "observed": "SAT",
+    "errors": []
+  }
+}

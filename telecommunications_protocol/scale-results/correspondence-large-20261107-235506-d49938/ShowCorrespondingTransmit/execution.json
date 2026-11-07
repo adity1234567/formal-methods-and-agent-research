@@ -1,0 +1,52 @@
+{
+  "java": "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+  "solver": "glucose",
+  "timeout_seconds": 60.0,
+  "harness": "scaling_large_correspondence.als",
+  "jvm_heap_cap_mb": 2048,
+  "source_sha256": {
+    "scaling_large_correspondence.als": "003230af788b7016363aef4c7d7c7f2233b917dabba1f5a5ce72e79a9088208a",
+    "telecommunications.als": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+    "telecommunications_large.als": "1395072cf94608a7d202ced6a66dfec9bdcda9f3a3ac2c857a477d8917f3169b"
+  },
+  "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+  "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+  "alloy_version": "6.2.0",
+  "format_version": 1,
+  "command": "ShowCorrespondingTransmit",
+  "declaration": {
+    "type": "run",
+    "name": "ShowCorrespondingTransmit",
+    "expected": "SAT",
+    "source": "run ShowCorrespondingTransmit for 3 but exactly 2 original/State, exactly 2 scalable/State, 6 Int, 4 seq"
+  },
+  "argv": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+    "-Xmx2048m",
+    "-jar",
+    "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+    "exec",
+    "-c",
+    "ShowCorrespondingTransmit",
+    "-n",
+    "-s",
+    "glucose",
+    "-t",
+    "xml",
+    "-o",
+    "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\ShowCorrespondingTransmit\\alloy",
+    "D:\\formal method\\telecommunications_protocol\\scale-results\\correspondence-large-20261107-235506-d49938\\sources\\scaling_large_correspondence.als"
+  ],
+  "status": "completed",
+  "started_at": "2026-11-07T23:57:14+06:00",
+  "process_exit_code": 0,
+  "no_overflow": true,
+  "memory_note": "The JVM heap cap is configured, not measured peak memory. Native solver memory is additional.",
+  "elapsed_seconds": 14.149,
+  "finished_at": "2026-11-07T23:57:28+06:00",
+  "validation": {
+    "validated": true,
+    "observed": "SAT",
+    "errors": []
+  }
+}

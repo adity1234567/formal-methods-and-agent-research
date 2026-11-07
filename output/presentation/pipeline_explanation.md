@@ -233,3 +233,46 @@ This command refreshes the summary and examples for that selected run. The audit
 The justified conclusion is that the selected finite model has satisfiable demonstrations and that its ten intended safety and abstraction checks found no counterexample within their recorded bounds. A witness establishes possibility, not inevitability. In particular, optional stuttering permits waiting without delivery. The package therefore makes no claim of fairness, eventual delivery, complete protocol deadlock freedom, timing guarantees, fault recovery, retransmission, full SS7 conformance, or universal correctness for every route and history size.
 
 Source: [setup and running instructions](../../telecommunications_protocol/README.md); [runner options, verify.py lines 217–227](../../telecommunications_protocol/verify.py); [completed review and validation](../../telecommunications_protocol/audit_report.md); [design limitations](../../telecommunications_protocol/design_notes.md).
+
+## 15. Larger-network extension, 8 November 2026
+
+The four-point results described above remain the original recorded baseline.
+A later extension separates network size from message-history length and adds
+three representations: an active subset of an ordered point pool, a version
+with explicit Before/After history fields, and a specialization for a fixed
+full route. The last version excludes insertion. The Before/After encoding
+supports state and individual-transition checks rather than the seven-snapshot
+delivery demonstration.
+
+The extension completed all ten property checks at ten active-route points with
+two-entry histories, and found the expected intentional-bug counterexample and
+exact-size operation witnesses. It also completed all ten checks at eight points
+with four-entry histories. Read the [current scaling results](../../telecommunications_protocol/results/scaling_summary.md)
+for additional successful scopes and the full record of unsuccessful attempts.
+
+The fixed-route model additionally produced validated traffic and transmission
+witnesses with exactly 1,000 active points and completed its initialisation
+check using one message value and a one-entry history. Its full-route forwarding
+witness timed out after 120 seconds. These results are narrower evidence than completing
+all properties with multiple pending occurrences. General 1,000-point attempts
+with longer histories hit translation or time limits. UNKNOWN results remain
+explicitly labelled and are never counted as successful checks.
+
+The `scale_verify.py` workflow freezes each experiment, applies a deadline to
+each Java process, and validates logs, receipts and SAT XML evidence. It also
+checks actual active-route sizes in the named full-route witnesses. Bounded
+correspondence harnesses compare the new encodings with the reference model
+without assuming post-state validity. Their successful results support the
+representation changes at the checked small scopes, while the mathematical
+explanation describes why the accounting identities telescope along a route.
+
+The ordered pool fixes the positions available for insertion, so a particular
+fresh point must fit the selected gap. This enabledness qualification, the
+snapshot limits, and the distinction between a witness and a property check
+remain part of the conclusion. None of these extensions establishes fairness,
+eventual delivery or a machine-checked theorem for arbitrary network size.
+
+Sources: [scaling design](../../telecommunications_protocol/scaling_design.md),
+[validated coverage and raw evidence](../../telecommunications_protocol/results/scaling_summary.md),
+[benchmark runner](../../telecommunications_protocol/scale_verify.py), and
+[correspondence runner](../../telecommunications_protocol/check_correspondence.py).

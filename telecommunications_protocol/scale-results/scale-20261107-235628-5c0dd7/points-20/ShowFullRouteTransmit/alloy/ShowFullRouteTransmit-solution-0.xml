@@ -1,0 +1,174 @@
+<alloy builddate="2025-01-09T08:17:18.350Z">
+
+<instance bitwidth="5" maxseq="2" mintrace="-1" maxtrace="-1" command="Run ShowFullRouteTransmit for 4 but 5 int, 2 seq, 20 SPC, 4 Message, exactly 2 State expect 1" filename="" tracelength="1" looplength="1">
+
+<sig label="seq/Int" ID="0" parentID="1" builtin="yes">
+</sig>
+
+<sig label="Int" ID="1" parentID="2" builtin="yes">
+</sig>
+
+<sig label="String" ID="3" parentID="2" builtin="yes">
+</sig>
+
+<sig label="this/Message" ID="4" parentID="2">
+   <atom label="Message$0"/>
+</sig>
+
+<sig label="this/SPC" ID="5" parentID="2">
+   <atom label="SPC$0"/>
+   <atom label="SPC$1"/>
+   <atom label="SPC$2"/>
+   <atom label="SPC$3"/>
+   <atom label="SPC$4"/>
+   <atom label="SPC$5"/>
+   <atom label="SPC$6"/>
+   <atom label="SPC$7"/>
+   <atom label="SPC$8"/>
+   <atom label="SPC$9"/>
+   <atom label="SPC$10"/>
+   <atom label="SPC$11"/>
+   <atom label="SPC$12"/>
+   <atom label="SPC$13"/>
+   <atom label="SPC$14"/>
+   <atom label="SPC$15"/>
+   <atom label="SPC$16"/>
+   <atom label="SPC$17"/>
+   <atom label="SPC$18"/>
+   <atom label="SPC$19"/>
+</sig>
+
+<field label="recBefore" ID="6" parentID="5">
+   <types> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="insBefore" ID="7" parentID="5">
+   <types> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="sentBefore" ID="8" parentID="5">
+   <types> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="recAfter" ID="9" parentID="5">
+   <tuple> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <types> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="insAfter" ID="10" parentID="5">
+   <tuple> <atom label="SPC$0"/> <atom label="0"/> <atom label="Message$0"/> </tuple>
+   <types> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<field label="sentAfter" ID="11" parentID="5">
+   <types> <type ID="5"/> <type ID="0"/> <type ID="4"/> </types>
+</field>
+
+<sig label="this/Before" ID="12" parentID="13" one="yes">
+   <atom label="Before$0"/>
+</sig>
+
+<sig label="this/After" ID="14" parentID="13" one="yes">
+   <atom label="After$0"/>
+</sig>
+
+<sig label="this/State" ID="13" parentID="2" abstract="yes">
+</sig>
+
+<field label="route" ID="15" parentID="13">
+   <tuple> <atom label="Before$0"/> <atom label="SPC$0"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$1"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$2"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$3"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$4"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$5"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$6"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$7"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$8"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$9"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$10"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$11"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$12"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$13"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$14"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$15"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$16"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$17"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$18"/> </tuple>
+   <tuple> <atom label="Before$0"/> <atom label="SPC$19"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$0"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$1"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$2"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$3"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$4"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$5"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$6"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$7"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$8"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$9"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$10"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$11"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$12"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$13"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$14"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$15"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$16"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$17"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$18"/> </tuple>
+   <tuple> <atom label="After$0"/> <atom label="SPC$19"/> </tuple>
+   <types> <type ID="13"/> <type ID="5"/> </types>
+</field>
+
+<sig label="pointOrder/Ord" ID="16" parentID="2" one="yes" private="yes">
+   <atom label="pointOrder/Ord$0"/>
+</sig>
+
+<field label="First" ID="17" parentID="16" private="yes">
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$0"/> </tuple>
+   <types> <type ID="16"/> <type ID="5"/> </types>
+</field>
+
+<field label="Next" ID="18" parentID="16" private="yes">
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$0"/> <atom label="SPC$1"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$1"/> <atom label="SPC$2"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$2"/> <atom label="SPC$3"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$3"/> <atom label="SPC$4"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$4"/> <atom label="SPC$5"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$5"/> <atom label="SPC$6"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$6"/> <atom label="SPC$7"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$7"/> <atom label="SPC$8"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$8"/> <atom label="SPC$9"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$9"/> <atom label="SPC$10"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$10"/> <atom label="SPC$11"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$11"/> <atom label="SPC$12"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$12"/> <atom label="SPC$13"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$13"/> <atom label="SPC$14"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$14"/> <atom label="SPC$15"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$15"/> <atom label="SPC$16"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$16"/> <atom label="SPC$17"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$17"/> <atom label="SPC$18"/> </tuple>
+   <tuple> <atom label="pointOrder/Ord$0"/> <atom label="SPC$18"/> <atom label="SPC$19"/> </tuple>
+   <types> <type ID="16"/> <type ID="5"/> <type ID="5"/> </types>
+</field>
+
+<sig label="univ" ID="2" builtin="yes">
+</sig>
+
+<skolem label="$ShowFullRouteTransmit_a" ID="19">
+   <tuple> <atom label="Before$0"/> </tuple>
+   <types> <type ID="13"/> </types>
+</skolem>
+
+<skolem label="$ShowFullRouteTransmit_b" ID="20">
+   <tuple> <atom label="After$0"/> </tuple>
+   <types> <type ID="13"/> </types>
+</skolem>
+
+<skolem label="$ShowFullRouteTransmit_m" ID="21">
+   <tuple> <atom label="Message$0"/> </tuple>
+   <types> <type ID="4"/> </types>
+</skolem>
+
+</instance>
+
+</alloy>

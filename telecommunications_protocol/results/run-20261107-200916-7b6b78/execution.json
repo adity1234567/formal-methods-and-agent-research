@@ -1,0 +1,31 @@
+{
+  "format_version": 2,
+  "status": "completed",
+  "started_at": "2026-11-07T20:09:16+06:00",
+  "argv": [
+    "C:\\Program Files\\Eclipse Adoptium\\jdk-25.0.4.7-hotspot\\bin\\java.EXE",
+    "-jar",
+    "D:\\formal method\\telecommunications_protocol\\tools\\alloy-6.2.0.jar",
+    "exec",
+    "-c",
+    "*",
+    "-n",
+    "-s",
+    "glucose",
+    "-t",
+    "xml",
+    "-o",
+    "D:\\formal method\\telecommunications_protocol\\results\\run-20261107-200916-7b6b78\\alloy",
+    "D:\\formal method\\telecommunications_protocol\\results\\run-20261107-200916-7b6b78\\telecommunications.als"
+  ],
+  "process_exit_code": 0,
+  "solver": "glucose",
+  "no_overflow": true,
+  "source_file": "telecommunications.als",
+  "analyzer_output": "alloy",
+  "model_sha256": "47d76e1f6c80954afd8b2ea0607486f4a410a80298a5d7bfd98573c4ade47621",
+  "jar_sha256": "6b8c1cb5bc93bedfc7c61435c4e1ab6e688a242dc702a394628d9a9801edb78d",
+  "java_version": "openjdk version \"25.0.4\" 2026-07-21 LTS\nOpenJDK Runtime Environment Temurin-25.0.4+7 (build 25.0.4+7-LTS)\nOpenJDK 64-Bit Server VM Temurin-25.0.4+7 (build 25.0.4+7-LTS, mixed mode, sharing)",
+  "alloy_version": "6.2.0",
+  "finished_at": "2026-11-07T20:10:07+06:00"
+}

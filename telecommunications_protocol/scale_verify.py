@@ -28,6 +28,13 @@ CORRECT_CHECKS = ["InitialIsValid", "RetrieveIsValid", "TransmitPreservesInvaria
                   "TransmitRefinesExternal", "ReceiveRefinesExternal", "DaemonIsInvisible", "InsertionIsInvisible"]
 EXTRA_NAMES = ["ShowExactRouteWithTraffic", "ShowTransmitAtRouteLimit", "ShowReceiveAtRouteLimit",
                "ShowDaemonAtRouteLimit", "ShowInsertionAtRouteLimit"]
+# External SAT solvers decide UNSAT-expected checks from Alloy's CNF export.
+# Commands that need an instance (witnesses, the expected bug) always use a
+# built-in Alloy solver so that their XML evidence can be validated.
+EXTERNAL_SOLVERS = {"kissat": ["-q", "-n"], "cadical": ["-q", "-n"]}
+DEFAULT_WSL_SAT_BIN = "$HOME/sat-solvers/root/usr/bin"
+CNF_LOG = r"^\d+\.\s+check\s+{name}\s+{name}\.cnf\s*$"
+SLOT_BOUND = re.compile(r"(?m)^//\s*slot-history-bound:\s*(\d+)\s*$")
 
 
 def now() -> str:
@@ -138,7 +145,9 @@ def generate(source: str, name: str, points: int, messages: int, *, representati
 
 def exact_route_evidence(instance: ET.Element, name: str, points: int) -> list[int]:
     fields = {field.get("label"): field for field in instance.findall("field")}
-    pending_fields = [fields[label] for label in ("ins", "insBefore", "insAfter") if label in fields]
+    # ins (sequence/ordered), insBefore/insAfter (two-slot) or ins<k>Before/
+    # ins<k>After (arity-2 slot fields of telecommunications_slots.als).
+    pending_fields = [fields[label] for label in fields if re.fullmatch(r"ins(\d)?(Before|After)?", label or "")]
     if "route" not in fields or not pending_fields:
         raise ValueError("Exact-size witness is missing route or pending fields")
     signatures = instance.findall("sig")
@@ -191,11 +200,14 @@ def exact_route_evidence(instance: ET.Element, name: str, points: int) -> list[i
                               for row in fields["ins"].findall("tuple"))
         else:
             slots = [slot for slot in ("Before", "After") if state in signature_atoms(slot)]
-            if len(slots) != 1 or f"ins{slots[0]}" not in fields:
+            labels = [label for label in fields if len(slots) == 1 and
+                      re.fullmatch(rf"ins\d?{slots[0]}", label or "")]
+            if len(slots) != 1 or not labels:
                 raise ValueError("Cannot map selected State to its Before/After pending field")
-            has_traffic = any(len(row.findall("atom")) == 3 and
+            # Two-slot fields have (SPC, index, Message); slot fields (SPC, Message).
+            has_traffic = any(len(row.findall("atom")) in {2, 3} and
                               row.findall("atom")[0].get("label") in active_points
-                              for row in fields[f"ins{slots[0]}"].findall("tuple"))
+                              for label in labels for row in fields[label].findall("tuple"))
         if not has_traffic:
             raise ValueError("Selected exact-size traffic witness contains no pending traffic")
         return [len(route)]
@@ -250,6 +262,8 @@ def validate(run_dir: Path, metadata: dict) -> dict:
             f"Execution not completed successfully: {metadata.get('status')}"], "active_route_lengths": None}
     if metadata.get("no_overflow") is not True:
         errors.append("Execution metadata does not confirm overflow prevention")
+    if metadata.get("backend") == "external":
+        return validate_external(run_dir, metadata, errors)
     try:
         receipt = json.loads((run_dir / "alloy" / "receipt.json").read_text(encoding="utf-8"))
         if receipt.get("solver") != metadata["solver"] or receipt.get("noOverflow") is not True:
@@ -292,28 +306,175 @@ def validate(run_dir: Path, metadata: dict) -> dict:
     return {"validated": not errors, "observed": observed, "errors": errors, "active_route_lengths": lengths}
 
 
-def run_command(run_dir: Path, generated: str, details: dict, *, original: Path, java: str,
-                jar: Path, solver: str, timeout: float, heap_mb: int) -> dict:
-    run_dir.mkdir(parents=True, exist_ok=False)
-    model = run_dir / "telecommunications.als"
-    model.write_text(generated, encoding="utf-8", newline="\n")
-    argv = [java, f"-Xmx{heap_mb}m", "-jar", str(jar), "exec", "-c", "0", "-n", "-s", solver,
-            "-t", "xml", "-o", str(run_dir / "alloy"), str(model)]
-    import os
-    original_relative = Path(os.path.relpath(original, run_dir)).as_posix()
-    metadata = {"format_version": 1, **details, "status": "running", "started_at": now(),
-                "solver": solver, "no_overflow": True, "argv": argv, "timeout_seconds": timeout,
-                "jvm_heap_cap_mb": heap_mb, "peak_process_memory_bytes": None,
-                "memory_note": "Heap cap is configured, not measured peak process memory; native solver allocation is additional.",
-                "model_sha256": digest(model), "original_sha256": digest(original),
-                "original_source_file": original_relative, "jar_sha256": digest(jar), "process_exit_code": None}
-    save_json(run_dir / "execution.json", metadata)
+def cnf_header(path: Path) -> tuple[int, int]:
+    with path.open("rb") as handle:
+        for raw in handle:
+            line = raw.decode("ascii", "replace").strip()
+            if line.startswith("p cnf"):
+                parts = line.split()
+                return int(parts[2]), int(parts[3])
+            if line and not line.startswith("c"):
+                break
+    raise ValueError("CNF file has no DIMACS header")
+
+
+def validate_external(run_dir: Path, metadata: dict, errors: list[str]) -> dict:
+    """Validate Alloy's CNF translation receipt plus the external solver record.
+
+    The external solver's UNSAT is accepted only for an UNSAT-expected check,
+    from a nonempty CNF whose hash was recorded before solving. A recorded
+    DRAT proof, when requested, must have been verified by drat-trim.
+    """
+    observed = None
+    name = metadata.get("command")
+    external = metadata.get("external", {})
+    try:
+        if metadata["command_type"] != "check" or metadata["expected"] != "UNSAT":
+            errors.append("External solvers are only accepted for UNSAT-expected checks")
+        receipt = json.loads((run_dir / "alloy" / "receipt.json").read_text(encoding="utf-8"))
+        if receipt.get("solver") != "CNF" or metadata.get("solver") != "CNF" or receipt.get("noOverflow") is not True:
+            errors.append("Receipt is not an overflow-checked CNF translation")
+        commands = receipt.get("commands", {})
+        record = commands.get(name, {})
+        if set(commands) != {name} or record.get("type") != "check":
+            errors.append("Receipt command identities differ")
+        if verify.normalize(record.get("source", "")) != verify.normalize(metadata["command_source"]):
+            errors.append("Receipt command/type/scope differs")
+        if record.get("bitwidth") != metadata["integer_bitwidth"] or record.get("maxseq") != metadata["sequence_bound"]:
+            errors.append("Receipt sequence or integer scope differs")
+        if record.get("transformPath") != f"{name}.cnf":
+            errors.append("Receipt CNF path differs")
+        log = (run_dir / "analyzer.log").read_text(encoding="utf-8")
+        if len(re.findall(CNF_LOG.format(name=re.escape(name)), log, re.M)) != 1:
+            errors.append("Log does not record exactly one CNF translation of this command")
+        if external.get("solver") not in EXTERNAL_SOLVERS:
+            errors.append("Unknown external solver")
+        if not external.get("cnf_clauses"):
+            errors.append("Empty CNF translations are inconclusive and cannot be decided externally")
+        cnf = run_dir / "alloy" / f"{name}.cnf"
+        if cnf.is_file() and digest(cnf) != external.get("cnf_sha256"):
+            errors.append("Retained CNF differs from the hash recorded before solving")
+        status, code = external.get("status_line"), external.get("exit_code")
+        if (status, code) == ("s UNSATISFIABLE", 20):
+            observed = "UNSAT"
+        elif (status, code) == ("s SATISFIABLE", 10):
+            observed = "SAT"
+        else:
+            errors.append(f"External solver gave no definite answer: {status!r}, exit {code}")
+        if observed != metadata["expected"]:
+            errors.append("Outcome differs from declared expectation")
+        proof = external.get("proof")
+        if proof is not None and proof.get("status_line") != "s VERIFIED":
+            errors.append("Requested DRAT proof was not verified")
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        errors.append(f"Cannot validate external-solver evidence: {exc}")
+    return {"validated": not errors, "observed": observed, "errors": errors, "active_route_lengths": None}
+
+
+def to_wsl_path(path: Path) -> str:
+    resolved = path.resolve()
+    drive = resolved.drive.rstrip(":").lower()
+    if not drive:
+        return resolved.as_posix()
+    return f"/mnt/{drive}" + resolved.as_posix()[len(resolved.drive):]
+
+
+def external_argv(program: str, arguments: list[str], timeout: float, sat_bin: str | None) -> list[str]:
+    """Run a solver natively when on PATH, otherwise inside WSL with a hard kill."""
+    native = shutil.which(program) if sat_bin is None else None
+    if native:
+        return [native, *arguments]
+    wsl = shutil.which("wsl")
+    if not wsl:
+        raise FileNotFoundError(f"{program} is not on PATH and WSL is unavailable")
+    # An empty directory argument selects the default, expanded inside WSL.
+    script = (f'bin="${{1:-{DEFAULT_WSL_SAT_BIN}}}"; t="$2"; p="$3"; shift 3; '
+              'exec timeout -s KILL "$t" "$bin/$p" "$@"')
+    translated = [to_wsl_path(Path(a)) if Path(a).is_absolute() else a for a in arguments]
+    return [wsl, "-e", "sh", "-c", script, "sh", sat_bin or "",
+            str(max(1, int(timeout))), program, *translated]
+
+
+def run_process(argv: list[str], log_path: Path, timeout: float, cwd: Path) -> tuple[str, int | None, str]:
+    """Run a process with a deadline; return (status, exit code, captured output)."""
+    process = None
+    status = "failed"
+    with log_path.open("w", encoding="utf-8", newline="\n") as log:
+        try:
+            process = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, cwd=cwd)
+            process.wait(timeout=max(timeout, 1))
+            status = "completed"
+        except subprocess.TimeoutExpired:
+            status = "timed_out"
+        except KeyboardInterrupt:
+            status = "interrupted"
+        finally:
+            if process is not None and process.poll() is None:
+                process.terminate()
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait(timeout=5)
+    return status, (process.returncode if process is not None else None), log_path.read_text(encoding="utf-8", errors="replace")
+
+
+def status_line(output: str) -> str | None:
+    lines = [line.strip() for line in output.splitlines() if line.strip().startswith("s ")]
+    return lines[-1] if lines else None
+
+
+def solve_externally(run_dir: Path, metadata: dict, *, solver: str, timeout: float, sat_bin: str | None,
+                     proof: bool, keep_cnf: bool) -> None:
+    """Decide the CNF Alloy wrote. Updates metadata in place."""
+    name = metadata["command"]
+    cnf = run_dir / "alloy" / f"{name}.cnf"
+    variables, clauses = cnf_header(cnf)
+    external = {"solver": solver, "cnf_sha256": digest(cnf), "cnf_bytes": cnf.stat().st_size,
+                "cnf_variables": variables, "cnf_clauses": clauses, "proof": None}
+    metadata["external"] = external
+    if clauses == 0:
+        # Kodkod decided the formula during translation and wrote an empty CNF.
+        # An empty CNF is satisfiable even when the assertion holds, so it is
+        # never interpreted here. The caller reruns with a built-in solver.
+        external["trivial_translation"] = True
+        return
+    version_argv = external_argv(solver, ["--version"], 30, sat_bin)
+    external["version"] = subprocess.run(version_argv, capture_output=True, text=True, timeout=60).stdout.strip()
+    proof_file = run_dir / f"{name}.drat"
+    arguments = [*EXTERNAL_SOLVERS[solver], str(cnf)] + ([str(proof_file)] if proof else [])
+    argv = external_argv(solver, arguments, timeout, sat_bin)
+    external["argv"] = argv
+    start = time.monotonic()
+    status, code, output = run_process(argv, run_dir / "solver.log", timeout + 10, ROOT)
+    external.update(status=status, exit_code=code, status_line=status_line(output),
+                    solve_seconds=round(time.monotonic() - start, 3))
+    if code not in (10, 20):
+        # coreutils timeout exits 124 (or 137 after SIGKILL) when the deadline expires.
+        metadata["status"] = "timed_out" if status == "timed_out" or code in (124, 137, -9) else "failed"
+    if proof and code == 20 and proof_file.is_file():
+        external["proof"] = {"bytes": proof_file.stat().st_size}
+        check_argv = external_argv("drat-trim", [str(cnf), str(proof_file), "-t", str(max(60, int(timeout)))],
+                                   timeout, sat_bin)
+        start = time.monotonic()
+        p_status, p_code, p_output = run_process(check_argv, run_dir / "proof-check.log", timeout + 10, ROOT)
+        external["proof"].update(checker="drat-trim", argv=check_argv, status=p_status, exit_code=p_code,
+                                 status_line=status_line(p_output), check_seconds=round(time.monotonic() - start, 3))
+    elif proof and code == 20:
+        external["proof"] = {"status_line": None, "error": "solver wrote no proof file"}
+    if proof_file.exists():
+        proof_file.unlink()  # Proofs can be gigabytes; the verification record is kept.
+    if not keep_cnf:
+        cnf.unlink()
+
+
+def run_alloy(argv: list[str], run_dir: Path, metadata: dict, timeout: float) -> None:
     start = time.monotonic()
     process = None
     with (run_dir / "analyzer.log").open("w", encoding="utf-8", newline="\n") as log:
         try:
             process = subprocess.Popen(argv, stdout=log, stderr=subprocess.STDOUT, cwd=ROOT)
-            metadata["process_exit_code"] = process.wait(timeout=timeout)
+            metadata["process_exit_code"] = process.wait(timeout=max(timeout, 1))
             metadata["status"] = "completed" if process.returncode == 0 else "failed"
         except subprocess.TimeoutExpired:
             metadata["status"] = "timed_out"
@@ -331,10 +492,68 @@ def run_command(run_dir: Path, generated: str, details: dict, *, original: Path,
                     process.wait(timeout=5)
             if process is not None:
                 metadata["process_exit_code"] = process.returncode
-            metadata.update(elapsed_seconds=round(time.monotonic() - start, 3), finished_at=now())
+    metadata["alloy_seconds"] = round(time.monotonic() - start, 3)
+
+
+def run_command(run_dir: Path, generated: str, details: dict, *, original: Path, java: str,
+                jar: Path, solver: str, timeout: float, heap_mb: int, sat_bin: str | None = None,
+                proof: bool = False, keep_cnf: bool = False, fallback_solver: str = "glucose") -> dict:
+    run_dir.mkdir(parents=True, exist_ok=False)
+    model = run_dir / "telecommunications.als"
+    model.write_text(generated, encoding="utf-8", newline="\n")
+    external = (solver in EXTERNAL_SOLVERS and details["command_type"] == "check" and
+                details["expected"] == "UNSAT")
+    alloy_solver = "CNF" if external else (fallback_solver if solver in EXTERNAL_SOLVERS else solver)
+
+    def alloy_argv(selected: str) -> list[str]:
+        return [java, f"-Xmx{heap_mb}m", "-jar", str(jar), "exec", "-c", "0", "-n", "-s", selected,
+                "-t", "xml", "-o", str(run_dir / "alloy"), str(model)]
+
+    import os
+    original_relative = Path(os.path.relpath(original, run_dir)).as_posix()
+    metadata = {"format_version": 1, **details, "status": "running", "started_at": now(),
+                "requested_solver": solver, "backend": "external" if external else "alloy",
+                "solver": alloy_solver, "no_overflow": True, "argv": alloy_argv(alloy_solver),
+                "timeout_seconds": timeout,
+                "jvm_heap_cap_mb": heap_mb, "peak_process_memory_bytes": None,
+                "memory_note": "Heap cap is configured, not measured peak process memory; native solver allocation is additional.",
+                "model_sha256": digest(model), "original_sha256": digest(original),
+                "original_source_file": original_relative, "jar_sha256": digest(jar), "process_exit_code": None}
+    save_json(run_dir / "execution.json", metadata)
+    start = time.monotonic()
+    run_alloy(metadata["argv"], run_dir, metadata, timeout)
+    if external and metadata["status"] == "completed" and metadata["process_exit_code"] == 0:
+        metadata["translation_seconds"] = metadata["alloy_seconds"]
+        remaining = timeout - (time.monotonic() - start)
+        if remaining <= 1:
+            metadata["status"] = "timed_out"
+        else:
+            try:
+                solve_externally(run_dir, metadata, solver=solver, timeout=remaining, sat_bin=sat_bin,
+                                 proof=proof, keep_cnf=keep_cnf)
+            except (OSError, ValueError, subprocess.SubprocessError) as exc:
+                metadata.update(status="failed", error=f"{type(exc).__name__}: {exc}")
+            if metadata.get("external", {}).get("trivial_translation"):
+                # Rerun the trivially decided command with a built-in solver, keeping
+                # the empty-CNF translation record for transparency.
+                (run_dir / "alloy").rename(run_dir / "alloy-cnf")
+                (run_dir / "analyzer.log").rename(run_dir / "translation.log")
+                metadata.update(backend="alloy", solver=fallback_solver, argv=alloy_argv(fallback_solver),
+                                process_exit_code=None)
+                run_alloy(metadata["argv"], run_dir, metadata, max(timeout - (time.monotonic() - start), 1))
+    metadata.update(elapsed_seconds=round(time.monotonic() - start, 3), finished_at=now())
     metadata["validation"] = validate(run_dir, metadata)
     save_json(run_dir / "execution.json", metadata)
     return metadata
+
+
+def solver_label(run: dict) -> str:
+    if run.get("backend") == "external":
+        external = run.get("external", {})
+        proof = external.get("proof")
+        suffix = " + DRAT verified" if proof and proof.get("status_line") == "s VERIFIED" else ""
+        return f"{external.get('solver', run.get('requested_solver'))} (CNF){suffix}"
+    return run.get("solver", "?")
 
 
 def summarize(suite: Path, metadata: dict):
@@ -354,12 +573,14 @@ def summarize(suite: Path, metadata: dict):
              "route to reach the boundary. These witnesses demonstrate existence, not general initialised reachability.", "",
              f"Representation: `{metadata['representation']}`. In sequence mode the route and histories share a "
              "sequence bound. Ordered mode uses the selected independent history bound. All results remain finite-scope evidence.", "",
-             "| SPC bound | seq | Int bits | Command | Expected | Observed | Status | Seconds | Validated |",
-             "|---|---|---|---|---|---|---|---|---|"]
+             "External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Alloy's CNF export. "
+             "Witnesses and the expected bug use a built-in Alloy solver so their instances can be validated.", "",
+             "| SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |",
+             "|---|---|---|---|---|---|---|---|---|---|"]
     for r in runs:
         v = r["validation"]
         lines.append(f"| {r['points_bound']} | {r['sequence_bound']} | {r['integer_bitwidth']} | {r['command']} | "
-                     f"{r['expected']} | {v['observed'] or 'UNKNOWN'} | {r['status']} | {r['elapsed_seconds']} | "
+                     f"{solver_label(r)} | {r['expected']} | {v['observed'] or 'UNKNOWN'} | {r['status']} | {r['elapsed_seconds']} | "
                      f"{'yes' if v['validated'] else 'no'} |")
     lines += ["", "Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.", ""]
     verify.write_text(suite / "summary.md", "\n".join(lines))
@@ -375,7 +596,14 @@ def main(argv=None) -> int:
     parser.add_argument("--commands", nargs="+", default=["all"], help="Names, all, or checks")
     parser.add_argument("--timeout", type=float, default=60, help="Seconds per command, default 60")
     parser.add_argument("--heap-mb", type=int, default=2048, help="JVM heap cap, default 2048 MiB")
-    parser.add_argument("--solver", default="sat4j", help="Default sat4j; glucose also supported")
+    parser.add_argument("--solver", default="sat4j",
+                        help="Built-in: sat4j, glucose, minisat. External: kissat or cadical "
+                             "(UNSAT-expected checks only, via Alloy's CNF export)")
+    parser.add_argument("--fallback-solver", default="glucose",
+                        help="Built-in solver for witnesses and empty CNFs when --solver is external")
+    parser.add_argument("--sat-bin", help="Directory of external solver binaries (inside WSL when not on PATH)")
+    parser.add_argument("--proof", action="store_true", help="Ask the external solver for a DRAT proof and check it with drat-trim")
+    parser.add_argument("--keep-cnf", action="store_true", help="Retain exported CNF files (they can be large)")
     parser.add_argument("--output", type=Path, default=ROOT / "scale-results")
     parser.add_argument("--dry-run", action="store_true", help="Generate sources and plan without running Java")
     args = parser.parse_args(argv)
@@ -387,6 +615,10 @@ def main(argv=None) -> int:
     representation = representation_of(source)
     if args.representation != "auto" and args.representation != representation:
         parser.error("Selected representation differs from the model's route declaration")
+    slot_bound = SLOT_BOUND.search(source)
+    if slot_bound and int(slot_bound.group(1)) != args.history_bound:
+        parser.error(f"This model has a fixed slot history bound of {slot_bound.group(1)}; "
+                     f"pass --history-bound {slot_bound.group(1)}")
     available = catalog(source, representation)
     selected = list(available) if args.commands == ["all"] else (
         [name for name in CORRECT_CHECKS if name in available] if args.commands == ["checks"] else args.commands)
@@ -402,6 +634,7 @@ def main(argv=None) -> int:
     suite_meta = {"format_version": 1, "started_at": now(), "original_sha256": digest(original),
                   "model": str(args.model.resolve()), "representation": representation,
                   "points": args.points, "commands": selected, "solver": args.solver,
+                  "fallback_solver": args.fallback_solver, "proof": args.proof,
                   "timeout_seconds": args.timeout, "jvm_heap_cap_mb": args.heap_mb, "runs": []}
     print(f"Scaling suite: {suite}", flush=True)
     for points in args.points:
@@ -416,10 +649,12 @@ def main(argv=None) -> int:
                 print(details["command_source"], flush=True)
                 continue
             result = run_command(target, generated, details, original=original, java=java, jar=JAR,
-                                 solver=args.solver, timeout=args.timeout, heap_mb=args.heap_mb)
+                                 solver=args.solver, timeout=args.timeout, heap_mb=args.heap_mb,
+                                 sat_bin=args.sat_bin, proof=args.proof, keep_cnf=args.keep_cnf,
+                                 fallback_solver=args.fallback_solver)
             suite_meta["runs"].append(result)
             summarize(suite, suite_meta)
-            print(f"{points:4} SPC {name}: {result['status']}, "
+            print(f"{points:4} SPC {name} [{solver_label(result)}]: {result['status']}, "
                   f"{result['validation']['observed'] or 'UNKNOWN'}, {result['elapsed_seconds']}s, "
                   f"validated={result['validation']['validated']}", flush=True)
             if result["status"] == "interrupted":

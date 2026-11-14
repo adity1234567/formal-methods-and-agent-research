@@ -26,7 +26,10 @@ MODEL_FILES = ("scaling_correspondence.als", "telecommunications.als", "telecomm
 HARNESSES = {
     MODEL_FILES[0]: MODEL_FILES,
     "scaling_large_correspondence.als": ("scaling_large_correspondence.als", "telecommunications.als", "telecommunications_large.als"),
+    "scaling_slots_correspondence.als": ("scaling_slots_correspondence.als", "telecommunications.als", "telecommunications_slots.als"),
 }
+PREFIXES = {"scaling_large_correspondence.als": "correspondence-large",
+            "scaling_slots_correspondence.als": "correspondence-slots"}
 JAR = ROOT / "tools" / "alloy-6.2.0.jar"
 
 
@@ -170,7 +173,7 @@ def summarize(suite: Path, metadata: dict):
               "They do not assume either post-state invariant. SAT witnesses exercise paired operations.", "",
               "Scope: three available points in each representation, up to three message values, four-entry histories, " +
               ("six-bit integers, and exactly two states per representation in each command." if
-               metadata.get("harness") == "scaling_large_correspondence.als" else
+               metadata.get("harness") in PREFIXES else
                "six-bit integers, and one or two states per representation as declared in each command."), "",
               "This is bounded conditional representation correspondence. It does not establish arbitrary-size equivalence "
               "or full enabledness equivalence for a fixed ordered pool. The original insertion may choose a fresh point "
@@ -195,7 +198,7 @@ def main() -> int:
     parser.add_argument("--heap-mb", type=int, default=2048)
     parser.add_argument("--solver", default="glucose")
     parser.add_argument("--harness", choices=sorted(HARNESSES), default=MODEL_FILES[0],
-                        help="Choose the ordinary or low-arity representation comparison")
+                        help="Choose the ordinary, low-arity or slot representation comparison")
     parser.add_argument("--commands", nargs="+", help="Select command names from the correspondence harness")
     parser.add_argument("--summarize", type=Path, help="Revalidate and regenerate a saved suite without running Alloy")
     args = parser.parse_args()
@@ -224,7 +227,7 @@ def main() -> int:
             parser.error("Command names must be unique and present in the harness")
         commands = [lookup[name] for name in args.commands]
     stamp = datetime.now(timezone(timedelta(hours=6))).strftime("%Y%m%d-%H%M%S")
-    prefix = "correspondence-large" if args.harness == "scaling_large_correspondence.als" else "correspondence"
+    prefix = PREFIXES.get(args.harness, "correspondence")
     suite = ROOT / "scale-results" / f"{prefix}-{stamp}-{uuid.uuid4().hex[:6]}"
     source_dir = suite / "sources"
     source_dir.mkdir(parents=True)

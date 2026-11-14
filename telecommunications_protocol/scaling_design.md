@@ -268,3 +268,197 @@ does not enlarge the scope of the dynamic-route or insertion claims, and it
 does not establish unbounded correctness or eventual delivery. Its report must
 name the fixed topology, exact active size, history bound and included command
 set whenever it states a result.
+
+## Arity-2 slot encoding
+
+`telecommunications_slots.als` is a further encoding of the two-snapshot
+ordered-pool model. It addresses the two costs that remained after reducing
+history fields to arity three.
+
+**Translation capacity.** Kodkod numbers the possible tuples of every relation
+with a 32-bit integer, so a relation of arity k over a universe of U atoms can
+only be represented when U^k is below about 2.1 × 10^9. With roughly 1,040 atoms
+(1,000 points, 32 integers and a few others), arity four needs about 10^12 tuple
+indices and fails; arity three needs about 1.1 × 10^9 and is already close to
+the limit. The slot encoding stores every history position as its own field,
+for example `ins2Before: lone Message` on `SPC`. Every declared relation then
+has arity two, which allows universes of roughly 46,000 atoms.
+
+**Arithmetic circuits.** The earlier encodings use `#`, `add` and `sub` for
+lengths, prepending, concatenation and buffer offsets. Alloy translates each of
+those into adder and counting circuits for every point. The slot encoding uses
+five constant `Slot` atoms instead: `S0`..`S3` hold data, newest first, and `S4`
+never holds a message. Constant shift relations replace arithmetic:
+
+| Operation | Slot formulation |
+|---|---|
+| contiguous history | every occupied slot's predecessor is occupied |
+| length n | the first unoccupied slot (`marker`) is `Sn` |
+| prepend m | `post = S0 -> m + (~shift1).pre`, with `S3` free in `pre` |
+| oldest value | the occupied slot without an occupied successor |
+| a ++ b | `a + (~shift_len(a)).b`, with no entry of `b` shifted past `S3` |
+| buffer offset `#input - #rec[p]` | the shift d with `marker(rec[p]).shift_d = marker(input)` |
+| output grows by one | `marker(before).shift1 = marker(after)` |
+
+The model therefore contains no cardinality, no integer arithmetic and no
+sequence library. Its `Int` and `seq` scopes are unused and are kept only so the
+scaling runner can apply its usual scope and receipt checks.
+
+**Linear route navigation.** The ordered-pool models find the first, last and
+next active point with `min`/`max` over transitive closures of the pool order.
+Alloy grounds `sectionInvariant`'s boundary condition once per point, and each
+grounding builds a closure-based minimum over the whole pool, so the circuit
+grows roughly with N³. In a development version of the slot model that still
+used closure-based navigation, translating `DaemonPreservesInvariant` at 1,000
+points had not finished after more than ten minutes. The slot model instead derives route structure by recursion along the
+constant pool order, with constant-size constraints per point:
+
+- `earlier` and `later`: the pool points that have an active point strictly
+  before or after them. Then `firstPoint = route - earlier` and
+  `lastPoint = route - later`.
+- `upcoming`: the first active point strictly after a point (used by the daemon
+  and insertion).
+- `carried`: the departure history of the nearest active point strictly before a
+  point. Boundary agreement becomes "every non-first active point received what
+  its predecessor sent", `received[p] = carried[p]`, which pairs the same
+  adjacent points as `departed[p] = received[next p]`.
+
+These fields are defined by the fact `derivedRouteStructure`. For any route and
+histories exactly one valuation of the derived fields satisfies it, so the fact
+does not restrict states or assume validity. Insertion's "fresh point lies in the
+gap" condition becomes `nextPoint[post, upstream] = fresh`, which, given
+`post.route = pre.route + fresh`, holds exactly when the fresh point lies strictly
+between upstream and its old successor in the pool order.
+
+**Fixed history bound.** The bound is four entries per history, matching the
+reference model's `4 seq` and the default of the other scalable encodings. It
+is declared by the comment `// slot-history-bound: 4`, and `scale_verify.py`
+refuses any other `--history-bound` for this model. A different bound requires
+adding or removing slot fields; it is not a command-line scope.
+
+**Correspondence.** `scaling_slots_correspondence.als` maps sequence index i of
+the reference model to slot `Si` and compares section invariants,
+initialisation, retrieval observations and all operation effects, as the
+earlier harnesses do. It also compares the external `suffix` predicate and the
+"output grew by one" condition directly on arbitrary histories, because those
+are the places where slot shifts replace integer arithmetic. The comparison is
+bounded evidence at three points. The ordered-pool insertion-enabledness
+qualification above applies unchanged.
+
+The slot model, like the other two-snapshot encodings, checks states and
+individual transitions. It omits the three- and seven-snapshot demonstrations.
+
+## External SAT solvers and proof checking
+
+Alloy 6.2 bundles SAT4J, MiniSat and Glucose. Its `CNF` transformer
+(`-s CNF`) writes the translated problem as a DIMACS file instead of solving
+it. `scale_verify.py --solver kissat` (or `cadical`) uses that export:
+
+1. Alloy translates the command and writes `<command>.cnf`. Its receipt and log
+   record the translation; the CNF's hash, variable and clause counts are
+   recorded before solving.
+2. The external solver decides the CNF. Exit code 20 with `s UNSATISFIABLE`
+   is an UNSAT result; exit code 10 with `s SATISFIABLE` is SAT; anything else,
+   including a timeout, is UNKNOWN. Translation and solving share one deadline.
+3. With `--proof`, the solver writes a DRAT proof, and `drat-trim` checks it
+   against the same CNF. A result recorded with a proof is accepted only when
+   the checker reports `s VERIFIED`. The UNSAT answer then no longer depends on
+   trusting the solver, only on Alloy's translation and the proof checker.
+   Proof files are deleted after checking because they can be very large.
+
+Two restrictions keep this sound:
+
+- **Empty CNFs are inconclusive.** When Kodkod decides a formula during
+  translation, the CNF transformer writes `p cnf 0 0`. That file is satisfiable
+  even when the assertion holds, so the runner never interprets it. It reruns
+  the command with the built-in fallback solver (`--fallback-solver`, default
+  Glucose) and records both the empty translation and the built-in result.
+- **External solvers decide only UNSAT-expected checks.** A SAT answer from a
+  CNF carries no Alloy instance. Witnesses and the expected bug counterexample
+  therefore always use the built-in solver, so their XML instances can still be
+  validated (for example, the exact active route length of full-route witnesses).
+
+Kissat, CaDiCaL and drat-trim are not bundled. On Windows the runner calls them
+inside WSL when they are not on `PATH`; see [tools/README.md](tools/README.md).
+
+## Unbounded argument
+
+Every Alloy result above is bounded twice: by the number of points and by the
+history length. The protocol's structure allows both bounds to be removed for
+the safety properties, without enlarging any Alloy scope.
+
+### Locality lemma
+
+`sectionInvariant` (apart from shape conditions) is a conjunction of local terms:
+
+- `C(p)`: `rec[p] = ins[p] ++ sent[p]` for each active point p;
+- `B(p, q)`: `sent[p] = rec[q]` for each pair of adjacent active points.
+
+A term's truth depends only on the fields it mentions and, for `B`, on p and q
+being adjacent. Each operation's frame condition keeps every other point's
+fields unchanged and keeps the route order, so a term that mentions only
+unchanged fields of points whose adjacency is unchanged has the same value in
+the post-state as in the pre-state. The terms that can change are:
+
+| Operation | Terms that can change |
+|---|---|
+| transmit | `C(first)`, `B(first, next)` |
+| receive | `C(last)`, `B(prev, last)` |
+| daemon from U to D | `C(U)`, `C(D)`, `B(prev, U)`, `B(U, D)`, `B(D, next)` |
+| insert X between U and D | `C(X)`, `B(U, X)`, `B(X, D)` (and `B(U, D)` disappears) |
+
+So a valid pre-state violates the invariant after a step if and only if one of
+these terms fails, and each term mentions at most two points beyond the ones the
+operation touches. Missing neighbours (for example a daemon whose upstream point
+is first) only remove terms. A counterexample on a route of any length therefore
+restricts to a counterexample on a window of at most four adjacent sections.
+
+The external observations are handled the same way. `input` is `rec[first]`,
+`output` is `sent[last]`, and `inFlight` is the concatenation of all pending
+buffers in route order. Writing that concatenation as `A ++ (window buffers) ++ B`
+with arbitrary sequences A and B covers every route length. The retrieve theorem
+`input = inFlight ++ output` follows by induction from the last point to the
+first, using C at the last point as the base and `C(p)` plus `B(p, next)` as the
+step, as already shown in "Pending messages without a sum over the network".
+
+### Machine-checked obligations
+
+`unbounded_check.py` states each window obligation over Z3's theory of
+sequences with an uninterpreted message sort, so it covers histories of every
+length and any number of message values. It proves invariant preservation and
+the external effect (or invisibility) of transmit, receive, daemon, insertion
+and the idle stutter, initial validity, and the base and step of the retrieve
+induction. It also requires a counterexample for the newest-first receive bug
+and satisfiable witnesses, so the premises are not contradictory. The latest
+results are in [results/unbounded_summary.md](results/unbounded_summary.md).
+
+The Alloy small-scope checks and the Z3 obligations support each other:
+
+- Z3 removes both bounds, but its encoding is a hand translation of the Alloy
+  predicates, and the locality lemma above is a paper argument.
+- Alloy checks the actual predicates, including their frame conditions, but only
+  up to a bound. The lemma shows a window of at most four sections suffices for
+  network size, and the reference model's completed checks at four points, and
+  the ordered models' completed checks at six and eight points, exceed it.
+
+Remaining qualifications: Z3's soundness is assumed; the encoding and lemma are
+not mechanically connected to the Alloy source; the ordered-pool insertion
+enabledness caveat still applies to the ordered models.
+
+### Liveness is a separate question
+
+Eventual delivery is not a safety property and none of the above implies it.
+`receivePoll` and `daemonOrIdle` deliberately permit idle steps forever, and the
+model does not need to make progress. A delivery argument requires:
+
+1. a **fairness assumption**: if a successful daemon step (respectively receive)
+   stays enabled, it eventually happens; and
+2. a **variant**: for each pending occurrence, the number of sections it still
+   has to traverse. Each successful daemon or receive step that moves the
+   occurrence decreases it, transmit does not increase it, and insertion can
+   increase it only finitely often if insertions are finite.
+
+With finitely many insertions, fairness forces every pending occurrence to reach
+the output. Bounded lasso checks of this argument are possible with Alloy 6
+temporal operators (fairness written as facts over traces), or in TLA+ with
+weak fairness. The project does not currently mechanize it.

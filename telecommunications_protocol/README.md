@@ -10,7 +10,8 @@ pages 321–329. Prepared 3 November 2026.
 - `presentation_notes.md`: slide outline, speaking notes, demonstration, and viva preparation.
 - `results/verification_summary.md`: actual Analyzer results, scopes, and limitations.
 - `results/scaling_summary.md`: larger-network checks, exact-size witnesses, timeouts, and resource limits.
-- `scaling_design.md`: scalable representations, bounded correspondence, and their qualifications.
+- `scaling_design.md`: scalable representations, bounded correspondence, the unbounded safety argument, and their qualifications.
+- `results/unbounded_summary.md`: Z3 proof obligations covering every network size and history length (safety only).
 - `results/example_instances.md`: readable delivery and bug examples extracted from the saved XML instances.
 - `audit_report.md`: completed review, corrections, and validation evidence.
 - `verify.py` / `verify.ps1`: repeat the analysis and save its evidence.
@@ -137,8 +138,15 @@ their results. Three different kinds of evidence matter:
 The abstraction checks compare observable endpoints before and after a step.
 Internal forwarding and insertion should leave both endpoints unchanged.
 Transmission and successful reception should have their corresponding external
-effects. This is bounded evidence for these properties; it is not an unbounded
-refinement proof.
+effects. The Alloy results are bounded evidence for these properties.
+
+The safety properties are also argued without bounds. A locality lemma shows
+that a counterexample on any route restricts to one on at most four adjacent
+sections, and `unbounded_check.py` uses Z3's sequence theory to prove each
+window obligation for histories of any length. The lemma and the Z3 encoding are
+a hand translation of the Alloy predicates, not mechanically linked to them; see
+[the unbounded argument](scaling_design.md#unbounded-argument). Eventual delivery
+remains unproved.
 
 ## Important modelling choices to disclose
 
@@ -218,13 +226,14 @@ model and teaching notes are a new translation and explanation.
 ## Larger-network analysis
 
 The original four-point analysis remains a reproducible reference. The scaling
-extension supplies three additional models:
+extension supplies four additional models:
 
 | Model | Network representation | History representation | Scope of use |
 |---|---|---|---|
 | `telecommunications_scalable.als` | Active subset of an ordered point pool | Original state-indexed sequences | Dynamic routes, including insertion, with multi-snapshot examples |
 | `telecommunications_large.als` | Active subset of an ordered point pool | Six history fields for Before/After slots | State and individual-transition checks with lower relation arity |
 | `telecommunications_fixed_route.als` | Every pool point belongs to one fixed route | Before/After slots | Exact-size fixed-route checks, with insertion excluded |
+| `telecommunications_slots.als` | Active subset of an ordered point pool, navigated by linear recursion | One arity-2 field per history position; no integers | State and individual-transition checks at the largest network sizes; history bound fixed at 4 |
 
 The point bound and history bound are independent in these models. Fixed pool
 positions qualify insertion enabledness, and the two-slot encodings do not
@@ -254,6 +263,18 @@ checks available in the selected model, or list individual command names.
 sequence model is selected when `--model` is omitted; its sequence bound still
 grows with the network size.
 
+The position-field model removes the translation-capacity limit and all
+integer circuits. Combine it with an external SAT solver and proof checking
+(setup in [tools/README.md](tools/README.md)):
+
+```powershell
+python .\scale_verify.py --model telecommunications_slots.als --points 20 --history-bound 4 --commands all --solver kissat --proof --timeout 600 --heap-mb 3072
+```
+
+External solvers decide only UNSAT-expected checks from Alloy's CNF export; the
+runner uses Glucose for witnesses, for the expected bug, and for any command
+that Alloy decides during translation (an empty CNF is never interpreted).
+
 For the narrowly bounded fixed-route 1,000-point traffic witness:
 
 ```powershell
@@ -270,12 +291,15 @@ operation-witness results.
 ```powershell
 python .\check_correspondence.py --timeout 60
 python .\check_correspondence.py --harness scaling_large_correspondence.als --timeout 90
-python -m unittest -v test_verification test_scaling test_correspondence
+python .\check_correspondence.py --harness scaling_slots_correspondence.als --timeout 900
+python -m unittest -v test_verification test_scaling test_correspondence test_external_and_slots
 python .\summarize_scaling.py
+python .\unbounded_check.py    # needs: python -m pip install -r requirements-unbounded.txt
 ```
 
 Run the consolidator after benchmark processes finish. It revalidates saved
 per-command evidence and groups completed checks only when the source hash and
 network/history/message/integer bounds agree. The correspondence harnesses
 compare representations at three points and remain bounded evidence. No
-scaling result establishes eventual delivery or arbitrary-size correctness.
+scaling result establishes eventual delivery; arbitrary-size safety rests on the
+separate unbounded argument.

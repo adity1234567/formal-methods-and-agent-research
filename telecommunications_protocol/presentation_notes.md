@@ -215,6 +215,7 @@ Reference for Alloy usage and language: [official Alloy documentation](https://a
 **On the slide**
 
 - A passing bounded check covers the stated finite scope.
+- Safety beyond the bounds rests on a separate argument: a locality lemma plus Z3 proofs (`results/unbounded_summary.md`).
 - Successful example traces demonstrate possibility, not inevitable progress.
 - `4 seq` limits the recorded submission history to four entries, including entries already delivered.
 - Future extension: temporal behaviour and delivery under explicit progress assumptions.
@@ -246,7 +247,11 @@ for a fifth submission in a `4 seq` analysis.”
 
 **Can two messages have identical content?** Repeating the same message atom in different sequence positions models repeated values. Avoid claiming that a set of message atoms alone counts transmission occurrences.
 
-**Does “no counterexample” mean proved correct?** It means none was found in the stated bounds. A general proof or an appropriate complete analysis would require more.
+**Does “no counterexample” mean proved correct?** In Alloy it means none was found in the stated bounds. For the safety properties we add an unbounded argument: every operation changes at most two adjacent sections, so a counterexample on any route shrinks to one on a window of at most four sections, and Z3 proves each window obligation for histories of any length. The lemma is a paper argument and the Z3 encoding is a hand translation, so we call this strong supporting evidence, not a mechanised refinement proof.
+
+**How did you push Alloy to larger networks?** Three changes. First, every history position became its own arity-2 field, because Kodkod cannot index relations whose universe-to-the-arity exceeds about 2.1 billion tuples. Second, lengths, prepending and offsets became constant slot shifts, so the SAT problem has no integer adder circuits. Third, first/last/next active point are computed by a linear recursion along the pool order instead of closure-based minimums, which grew roughly with N cubed. The report records which sizes then completed.
+
+**Why trust an UNSAT answer from Kissat?** With `--proof`, Kissat writes a DRAT proof and the independent checker drat-trim verifies it against the same CNF. An empty CNF from Alloy is never interpreted, because Alloy writes one when it has already decided the formula, and an empty CNF is satisfiable. Witnesses still use Alloy's own solver so their instances can be inspected.
 
 **What did your group contribute?** Describe the work you actually performed: interpreting the requirements, reviewing the model, explaining operations, running checks, investigating any counterexample, and preparing the demonstration. Do not present generated package contents as a history of work you did not do.
 

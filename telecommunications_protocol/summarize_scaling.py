@@ -21,6 +21,7 @@ MODELS = {
     "telecommunications_scalable.als": "Ordered active route",
     "telecommunications_large.als": "Ordered route, two slots",
     "telecommunications_fixed_route.als": "Fixed full route, two slots",
+    "telecommunications_slots.als": "Ordered route, position fields (arity 2)",
 }
 
 
@@ -167,8 +168,8 @@ def main() -> int:
         else:
             details.append("Property coverage is incomplete. Missing validated checks: " +
                            ", ".join(f"`{x}`" for x in sorted(required - checks)) + ".")
-        details += ["", "| Command | Validated outcome | Seconds | Exact active route lengths | Evidence |",
-                    "|---|---|---:|---|---|"]
+        details += ["", "| Command | Validated outcome | Solver | Seconds | Exact active route lengths | Evidence |",
+                    "|---|---|---|---:|---|---|"]
         # Keep the fastest validated successful attempt for a concise command
         # table, and link every suite below so timeouts and retries remain visible.
         best = {}
@@ -179,7 +180,8 @@ def main() -> int:
                     best[run["command"]] = (run, execution)
         for name, (run, execution) in sorted(best.items()):
             lengths = run["validation"].get("active_route_lengths")
-            details.append(f"| `{name}` | {run['validation']['observed']} | {run['elapsed_seconds']:.3f} | "
+            details.append(f"| `{name}` | {run['validation']['observed']} | {scale_verify.solver_label(run)} | "
+                           f"{run['elapsed_seconds']:.3f} | "
                            f"{lengths if lengths is not None else 'not an exact-size witness'} | [record]({link(execution)}) |")
         unknowns = [run for run, _, _ in records if not run["validation"]["validated"]]
         details += ["", f"Incomplete/failed attempts retained for this scope: {len(unknowns)}.", ""]
@@ -201,6 +203,20 @@ def main() -> int:
               "capacity before solving. Lower-arity variants address that representation limit, but remain "
               "subject to solver time and memory costs. Timeouts and translation/resource failures "
               "do not provide counterexamples.", "",
+              "The position-field model (telecommunications_slots.als) stores every history position as its own arity-2 field and replaces "
+              "lengths, offsets and concatenation by constant slot shifts, so its SAT problems contain no "
+              "integer circuits and its relations stay far below the translation capacity. Its history "
+              "bound is fixed at four entries. Some of its checks were decided by Kissat or CaDiCaL from "
+              "Alloy's CNF export; the Solver column says which, and whether a DRAT proof was verified. "
+              "External solvers only decide UNSAT-expected checks; witnesses use a built-in solver.", "",
+              "## Unbounded safety argument", "",
+              "Bounded network sizes are not the only evidence. A locality lemma reduces every safety "
+              "obligation to a window of at most four adjacent sections, and Z3 proves the window "
+              "obligations for histories of any length; see "
+              f"[the unbounded argument]({link(ROOT / 'scaling_design.md')}#unbounded-argument) and "
+              f"[its results]({link(ROOT / 'results' / 'unbounded_summary.md')}). The large-scope runs "
+              "below are therefore capacity measurements and full-size examples, not the basis of the "
+              "safety claim.", "",
               "## Bounded correspondence", "",
               "The correspondence harnesses compare paired representations at three points, four-entry "
               "histories and six-bit integers. They compare validity, initialisation, retrieval and operation "
@@ -213,8 +229,9 @@ def main() -> int:
               "Some experiments ran concurrently on the same machine, so elapsed times are execution "
               "records rather than a controlled performance comparison. Baseline and optimized runs "
               "also use different history bounds in several cases.", "",
-              "No completed finite scope proves eventual delivery, fairness, arbitrary network size, "
-              "or complete SS7 conformance. Optional polling and idle steps still permit indefinite waiting.", "",
+              "No completed finite scope proves eventual delivery, fairness, or complete SS7 conformance. "
+              "Arbitrary network size and history length are addressed only for safety, by the separate "
+              "unbounded argument. Optional polling and idle steps still permit indefinite waiting.", "",
               "## Detailed validated evidence", "", *details]
     if excluded:
         lines += ["## Earlier development attempts", "",

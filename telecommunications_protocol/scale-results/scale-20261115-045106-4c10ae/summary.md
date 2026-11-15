@@ -12,6 +12,7 @@ External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Al
 
 | SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |
 |---|---|---|---|---|---|---|---|---|---|
+| 10 | 4 | 5 | DaemonIsInvisible | kissat (CNF) | UNSAT | UNKNOWN | interrupted | ? | no |
 | 10 | 4 | 5 | ReceiveRefinesExternal | kissat (CNF) | UNSAT | UNSAT | completed | 353.615 | yes |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.

@@ -8,32 +8,34 @@ Scopes bound available SPC atoms. Only the separately named exact-route witnesse
 
 Representation: `ordered`. In sequence mode the route and histories share a sequence bound. Ordered mode uses the selected independent history bound. All results remain finite-scope evidence.
 
-| SPC bound | seq | Int bits | Command | Expected | Observed | Status | Seconds | Validated |
-|---|---|---|---|---|---|---|---|---|
-| 6 | 4 | 5 | BrokenReceiveWouldPreserveInvariant | SAT | UNKNOWN | failed | 0.503 | no |
-| 6 | 4 | 5 | DaemonIsInvisible | UNSAT | UNKNOWN | failed | 0.504 | no |
-| 6 | 4 | 5 | DaemonPreservesInvariant | UNSAT | UNKNOWN | failed | 0.527 | no |
-| 6 | 4 | 5 | InitialIsValid | UNSAT | UNKNOWN | failed | 0.596 | no |
-| 6 | 4 | 5 | InsertionIsInvisible | UNSAT | UNKNOWN | failed | 0.487 | no |
-| 6 | 4 | 5 | InsertionPreservesInvariant | UNSAT | UNKNOWN | failed | 0.539 | no |
-| 6 | 4 | 5 | ReceivePreservesInvariant | UNSAT | UNKNOWN | failed | 0.669 | no |
-| 6 | 4 | 5 | ReceiveRefinesExternal | UNSAT | UNKNOWN | failed | 0.5 | no |
-| 6 | 4 | 5 | RetrieveIsValid | UNSAT | UNKNOWN | failed | 0.887 | no |
-| 6 | 4 | 5 | ShowDaemon | SAT | UNKNOWN | failed | 0.598 | no |
-| 6 | 4 | 5 | ShowFullRouteDaemon | SAT | UNKNOWN | failed | 0.528 | no |
-| 6 | 4 | 5 | ShowFullRouteInsertion | SAT | UNKNOWN | failed | 0.629 | no |
-| 6 | 4 | 5 | ShowFullRoutePendingPoll | SAT | UNKNOWN | failed | 0.515 | no |
-| 6 | 4 | 5 | ShowFullRouteReceive | SAT | UNKNOWN | failed | 0.502 | no |
-| 6 | 4 | 5 | ShowFullRouteTransmit | SAT | UNKNOWN | failed | 0.501 | no |
-| 6 | 4 | 5 | ShowFullRouteWithTraffic | SAT | UNKNOWN | failed | 0.454 | no |
-| 6 | 4 | 5 | ShowInsertionWithTraffic | SAT | UNKNOWN | failed | 0.627 | no |
-| 6 | 4 | 5 | ShowPendingPollCanStutter | SAT | UNKNOWN | failed | 0.474 | no |
-| 6 | 4 | 5 | ShowReceive | SAT | UNKNOWN | failed | 0.514 | no |
-| 6 | 4 | 5 | ShowRepeatedMessageValue | SAT | UNKNOWN | failed | 0.647 | no |
-| 6 | 4 | 5 | ShowTransmit | SAT | UNKNOWN | failed | 0.524 | no |
-| 6 | 4 | 5 | ShowTwoMessageDelivery | SAT | UNKNOWN | failed | 0.501 | no |
-| 6 | 4 | 5 | TransmitPreservesInvariant | UNSAT | UNKNOWN | failed | 0.98 | no |
-| 6 | 4 | 5 | TransmitRefinesExternal | UNSAT | UNKNOWN | failed | 0.524 | no |
-| 8 | 4 | 5 | InitialIsValid | UNSAT | UNKNOWN | abandoned | None | no |
+External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Alloy's CNF export. Witnesses and the expected bug use a built-in Alloy solver so their instances can be validated.
+
+| SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |
+|---|---|---|---|---|---|---|---|---|---|
+| 6 | 4 | 5 | BrokenReceiveWouldPreserveInvariant | glucose | SAT | UNKNOWN | failed | 0.503 | no |
+| 6 | 4 | 5 | DaemonIsInvisible | glucose | UNSAT | UNKNOWN | failed | 0.504 | no |
+| 6 | 4 | 5 | DaemonPreservesInvariant | glucose | UNSAT | UNKNOWN | failed | 0.527 | no |
+| 6 | 4 | 5 | InitialIsValid | glucose | UNSAT | UNKNOWN | failed | 0.596 | no |
+| 6 | 4 | 5 | InsertionIsInvisible | glucose | UNSAT | UNKNOWN | failed | 0.487 | no |
+| 6 | 4 | 5 | InsertionPreservesInvariant | glucose | UNSAT | UNKNOWN | failed | 0.539 | no |
+| 6 | 4 | 5 | ReceivePreservesInvariant | glucose | UNSAT | UNKNOWN | failed | 0.669 | no |
+| 6 | 4 | 5 | ReceiveRefinesExternal | glucose | UNSAT | UNKNOWN | failed | 0.500 | no |
+| 6 | 4 | 5 | RetrieveIsValid | glucose | UNSAT | UNKNOWN | failed | 0.887 | no |
+| 6 | 4 | 5 | ShowDaemon | glucose | SAT | UNKNOWN | failed | 0.598 | no |
+| 6 | 4 | 5 | ShowFullRouteDaemon | glucose | SAT | UNKNOWN | failed | 0.528 | no |
+| 6 | 4 | 5 | ShowFullRouteInsertion | glucose | SAT | UNKNOWN | failed | 0.629 | no |
+| 6 | 4 | 5 | ShowFullRoutePendingPoll | glucose | SAT | UNKNOWN | failed | 0.515 | no |
+| 6 | 4 | 5 | ShowFullRouteReceive | glucose | SAT | UNKNOWN | failed | 0.502 | no |
+| 6 | 4 | 5 | ShowFullRouteTransmit | glucose | SAT | UNKNOWN | failed | 0.501 | no |
+| 6 | 4 | 5 | ShowFullRouteWithTraffic | glucose | SAT | UNKNOWN | failed | 0.454 | no |
+| 6 | 4 | 5 | ShowInsertionWithTraffic | glucose | SAT | UNKNOWN | failed | 0.627 | no |
+| 6 | 4 | 5 | ShowPendingPollCanStutter | glucose | SAT | UNKNOWN | failed | 0.474 | no |
+| 6 | 4 | 5 | ShowReceive | glucose | SAT | UNKNOWN | failed | 0.514 | no |
+| 6 | 4 | 5 | ShowRepeatedMessageValue | glucose | SAT | UNKNOWN | failed | 0.647 | no |
+| 6 | 4 | 5 | ShowTransmit | glucose | SAT | UNKNOWN | failed | 0.524 | no |
+| 6 | 4 | 5 | ShowTwoMessageDelivery | glucose | SAT | UNKNOWN | failed | 0.501 | no |
+| 6 | 4 | 5 | TransmitPreservesInvariant | glucose | UNSAT | UNKNOWN | failed | 0.980 | no |
+| 6 | 4 | 5 | TransmitRefinesExternal | glucose | UNSAT | UNKNOWN | failed | 0.524 | no |
+| 8 | 4 | 5 | InitialIsValid | glucose | UNSAT | UNKNOWN | abandoned | ? | no |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.

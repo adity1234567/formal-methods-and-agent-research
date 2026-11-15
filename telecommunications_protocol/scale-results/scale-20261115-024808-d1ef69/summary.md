@@ -12,6 +12,7 @@ External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Al
 
 | SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |
 |---|---|---|---|---|---|---|---|---|---|
-| 20 | 4 | 5 | InitialIsValid | glucose | UNSAT | UNSAT | completed | 4.961 | yes |
+| 20 | 4 | 5 | InitialIsValid | glucose | UNSAT | UNSAT | completed | 4.961 (host asleep 5 s) | yes |
+| 20 | 4 | 5 | RetrieveIsValid | glucose | UNSAT | UNKNOWN | interrupted | ? | no |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.

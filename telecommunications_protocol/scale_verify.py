@@ -657,6 +657,8 @@ def main(argv=None) -> int:
     parser.add_argument("--sat-bin", help="Directory of external solver binaries (inside WSL when not on PATH)")
     parser.add_argument("--proof", action="store_true", help="Ask the external solver for a DRAT proof and check it with drat-trim")
     parser.add_argument("--keep-cnf", action="store_true", help="Retain exported CNF files (they can be large)")
+    parser.add_argument("--jobs", type=int, default=1,
+                        help="Commands to run concurrently (each is a separate Java process)")
     parser.add_argument("--allow-sleep", action="store_true",
                         help="Do not keep Windows (and its display) awake while the suite runs")
     parser.add_argument("--output", type=Path, default=ROOT / "scale-results")
@@ -694,6 +696,7 @@ def main(argv=None) -> int:
     print(f"Scaling suite: {suite}", flush=True)
     keep_awake = KeepAwake(enabled=not args.allow_sleep and not args.dry_run)
     keep_awake.__enter__()
+    plan = []
     for points in args.points:
         for name in selected:
             generated, details = generate(source, name, points, args.messages,
@@ -705,20 +708,42 @@ def main(argv=None) -> int:
                 save_json(target / "plan.json", details)
                 print(details["command_source"], flush=True)
                 continue
-            result = run_command(target, generated, details, original=original, java=java, jar=JAR,
-                                 solver=args.solver, timeout=args.timeout, heap_mb=args.heap_mb,
-                                 sat_bin=args.sat_bin, proof=args.proof, keep_cnf=args.keep_cnf,
-                                 fallback_solver=args.fallback_solver)
-            suite_meta["runs"].append(result)
-            summarize(suite, suite_meta)
+            plan.append((points, name, target, generated, details))
+
+    import threading
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    lock = threading.Lock()
+
+    def execute(item):
+        points, name, target, generated, details = item
+        return points, name, run_command(
+            target, generated, details, original=original, java=java, jar=JAR,
+            solver=args.solver, timeout=args.timeout, heap_mb=args.heap_mb,
+            sat_bin=args.sat_bin, proof=args.proof, keep_cnf=args.keep_cnf,
+            fallback_solver=args.fallback_solver)
+
+    # Each command is an independent Java (and solver) process; --jobs runs
+    # several at once. Concurrent runs share CPU and memory, so their elapsed
+    # times are wall-clock records, not isolated performance measurements.
+    interrupted = False
+    with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
+        futures = [pool.submit(execute, item) for item in plan]
+        for future in as_completed(futures):
+            points, name, result = future.result()
+            with lock:
+                suite_meta["runs"].append(result)
+                summarize(suite, suite_meta)
             print(f"{points:4} SPC {name} [{solver_label(result)}]: {result['status']}, "
                   f"{result['validation']['observed'] or 'UNKNOWN'}, {result['elapsed_seconds']}s, "
                   f"validated={result['validation']['validated']}", flush=True)
-            if result["status"] == "interrupted":
-                suite_meta["finished_at"] = now()
-                summarize(suite, suite_meta)
-                return 130
+            interrupted = interrupted or result["status"] == "interrupted"
+    suite_meta["concurrent_jobs"] = max(1, args.jobs)
+    suite_meta["runs"].sort(key=lambda r: (r["points_bound"], selected.index(r["command"])))
     keep_awake.__exit__(None, None, None)
+    if interrupted:
+        suite_meta["finished_at"] = now()
+        summarize(suite, suite_meta)
+        return 130
     suite_meta.update(finished_at=now(), dry_run=args.dry_run)
     summarize(suite, suite_meta)
     print(f"Summary: {suite / 'summary.md'}", flush=True)

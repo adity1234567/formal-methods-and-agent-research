@@ -13,5 +13,14 @@ External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Al
 | SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |
 |---|---|---|---|---|---|---|---|---|---|
 | 10 | 4 | 5 | InitialIsValid | glucose | UNSAT | UNSAT | completed | 1.573 | yes |
+| 10 | 4 | 5 | RetrieveIsValid | glucose | UNSAT | UNSAT | completed | 160.153 | yes |
+| 10 | 4 | 5 | TransmitPreservesInvariant | glucose | UNSAT | UNSAT | completed | 16.009 | yes |
+| 10 | 4 | 5 | ReceivePreservesInvariant | glucose | UNSAT | UNSAT | completed | 27.028 | yes |
+| 10 | 4 | 5 | DaemonPreservesInvariant | glucose | UNSAT | UNSAT | completed | 79.033 | yes |
+| 10 | 4 | 5 | InsertionPreservesInvariant | glucose | UNSAT | UNSAT | completed | 15.533 | yes |
+| 10 | 4 | 5 | TransmitRefinesExternal | glucose | UNSAT | UNSAT | completed | 11.391 | yes |
+| 10 | 4 | 5 | ReceiveRefinesExternal | glucose | UNSAT | UNSAT | completed | 76.15 | yes |
+| 10 | 4 | 5 | DaemonIsInvisible | glucose | UNSAT | UNSAT | completed | 136.196 | yes |
+| 10 | 4 | 5 | InsertionIsInvisible | glucose | UNSAT | UNSAT | completed | 18.047 | yes |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.

@@ -103,5 +103,7 @@
     "observed": "UNSAT",
     "errors": [],
     "active_route_lengths": null
-  }
+  },
+  "host_suspended_seconds": 0.0,
+  "host_suspended_source": "Windows Kernel-Power Modern Standby enter/exit events (506/507), annotated after the run"
 }

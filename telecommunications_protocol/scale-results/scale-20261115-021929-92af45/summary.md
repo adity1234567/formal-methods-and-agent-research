@@ -20,5 +20,21 @@ External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Al
 | 10 | 4 | 5 | InsertionPreservesInvariant | kissat (CNF) + DRAT verified | UNSAT | UNSAT | completed | 46.162 | yes |
 | 10 | 4 | 5 | TransmitRefinesExternal | kissat (CNF) + DRAT verified | UNSAT | UNSAT | completed | 33.055 | yes |
 | 10 | 4 | 5 | ReceiveRefinesExternal | kissat (CNF) + DRAT verified | UNSAT | UNSAT | completed | 561.654 | yes |
+| 10 | 4 | 5 | DaemonIsInvisible | kissat (CNF) + DRAT verified | UNSAT | UNSAT | completed | 686.418 | yes |
+| 10 | 4 | 5 | InsertionIsInvisible | kissat (CNF) | UNSAT | UNSAT | completed | 5009.14 | no |
+| 10 | 4 | 5 | BrokenReceiveWouldPreserveInvariant | glucose | SAT | SAT | completed | 3.09 | yes |
+| 10 | 4 | 5 | ShowTransmit | glucose | SAT | SAT | completed | 3.053 | yes |
+| 10 | 4 | 5 | ShowReceive | glucose | SAT | SAT | completed | 2.241 | yes |
+| 10 | 4 | 5 | ShowDaemon | glucose | SAT | SAT | completed | 2.236 | yes |
+| 10 | 4 | 5 | ShowInsertionWithTraffic | glucose | SAT | SAT | completed | 2.57 | yes |
+| 10 | 4 | 5 | ShowPendingPollCanStutter | glucose | SAT | SAT | completed | 2.262 | yes |
+| 10 | 4 | 5 | ShowFullRouteWithTraffic | glucose | SAT | SAT | completed | 2.726 | yes |
+| 10 | 4 | 5 | ShowFullRouteTransmit | glucose | SAT | SAT | completed | 3.528 | yes |
+| 10 | 4 | 5 | ShowFullRouteReceive | glucose | SAT | SAT | completed | 3.971 | yes |
+| 10 | 4 | 5 | ShowFullRouteDaemon | glucose | SAT | SAT | completed | 3.878 | yes |
+| 10 | 4 | 5 | ShowFullRouteInsertion | glucose | SAT | SAT | completed | 4.308 | yes |
+| 10 | 4 | 5 | ShowFullRoutePendingPoll | glucose | SAT | SAT | completed | 3.733 | yes |
+| 20 | 4 | 5 | InitialIsValid | kissat (CNF) + DRAT verified | UNSAT | UNSAT | completed | 7.992 | yes |
+| 20 | 4 | 5 | RetrieveIsValid | kissat (CNF) | UNSAT | UNKNOWN | timed_out | 2142.874 | no |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.

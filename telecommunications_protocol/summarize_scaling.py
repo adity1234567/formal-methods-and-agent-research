@@ -170,18 +170,21 @@ def main() -> int:
                            ", ".join(f"`{x}`" for x in sorted(required - checks)) + ".")
         details += ["", "| Command | Validated outcome | Solver | Seconds | Exact active route lengths | Evidence |",
                     "|---|---|---|---:|---|---|"]
-        # Keep the fastest validated successful attempt for a concise command
-        # table, and link every suite below so timeouts and retries remain visible.
+        # Keep the fastest validated successful attempt per command and solver
+        # for a concise table, and link every suite below so timeouts and
+        # retries remain visible. Runs during which the host slept rank last.
         best = {}
         for run, execution, suite in records:
             if run["validation"]["validated"]:
-                prior = best.get(run["command"])
-                if prior is None or run["elapsed_seconds"] < prior[0]["elapsed_seconds"]:
-                    best[run["command"]] = (run, execution)
-        for name, (run, execution) in sorted(best.items()):
+                key = (run["command"], scale_verify.solver_label(run))
+                rank = ((run.get("host_suspended_seconds") or 0) >= 5, run["elapsed_seconds"])
+                prior = best.get(key)
+                if prior is None or rank < prior[2]:
+                    best[key] = (run, execution, rank)
+        for (name, _), (run, execution, _) in sorted(best.items()):
             lengths = run["validation"].get("active_route_lengths")
             details.append(f"| `{name}` | {run['validation']['observed']} | {scale_verify.solver_label(run)} | "
-                           f"{run['elapsed_seconds']:.3f} | "
+                           f"{scale_verify.seconds_label(run)} | "
                            f"{lengths if lengths is not None else 'not an exact-size witness'} | [record]({link(execution)}) |")
         unknowns = [run for run, _, _ in records if not run["validation"]["validated"]]
         details += ["", f"Incomplete/failed attempts retained for this scope: {len(unknowns)}.", ""]
@@ -229,6 +232,12 @@ def main() -> int:
               "Some experiments ran concurrently on the same machine, so elapsed times are execution "
               "records rather than a controlled performance comparison. Baseline and optimized runs "
               "also use different history bounds in several cases.", "",
+              "The benchmark host is a laptop with Modern Standby. Runs recorded from 15 November 2026 "
+              "carry the time the host spent in standby during the command; a timing marked "
+              "\"host asleep\" overstates the solving time and its deadline was not enforced in real "
+              "time. Its outcome is still validated normally. The runner now keeps Windows and the "
+              "display awake while a suite runs (disable with --allow-sleep). External solvers run "
+              "inside WSL, which on this host is limited to 4 GB of memory and 4 processors.", "",
               "No completed finite scope proves eventual delivery, fairness, or complete SS7 conformance. "
               "Arbitrary network size and history length are addressed only for safety, by the separate "
               "unbounded argument. Optional polling and idle steps still permit indefinite waiting.", "",

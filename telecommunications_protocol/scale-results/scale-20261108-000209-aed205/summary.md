@@ -8,8 +8,10 @@ Scopes bound available SPC atoms. Only the separately named exact-route witnesse
 
 Representation: `ordered`. In sequence mode the route and histories share a sequence bound. Ordered mode uses the selected independent history bound. All results remain finite-scope evidence.
 
-| SPC bound | seq | Int bits | Command | Expected | Observed | Status | Seconds | Validated |
-|---|---|---|---|---|---|---|---|---|
-| 10 | 2 | 5 | RetrieveIsValid | UNSAT | UNSAT | completed | 20.793 | yes |
+External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Alloy's CNF export. Witnesses and the expected bug use a built-in Alloy solver so their instances can be validated.
+
+| SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |
+|---|---|---|---|---|---|---|---|---|---|
+| 10 | 2 | 5 | RetrieveIsValid | glucose | UNSAT | UNSAT | completed | 20.793 | yes |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.

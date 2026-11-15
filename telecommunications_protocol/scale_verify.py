@@ -9,6 +9,7 @@ import argparse
 from datetime import datetime, timedelta, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import shutil
@@ -39,6 +40,45 @@ SLOT_BOUND = re.compile(r"(?m)^//\s*slot-history-bound:\s*(\d+)\s*$")
 
 def now() -> str:
     return datetime.now(timezone(timedelta(hours=6))).isoformat(timespec="seconds")
+
+
+def awake_seconds() -> float | None:
+    """Seconds of system uptime excluding sleep/standby (Windows only)."""
+    if os.name != "nt":
+        return None
+    import ctypes
+    value = ctypes.c_ulonglong()
+    if ctypes.windll.kernel32.QueryUnbiasedInterruptTime(ctypes.byref(value)):
+        return value.value / 1e7
+    return None
+
+
+class KeepAwake:
+    """Ask Windows not to idle-sleep while benchmarks run.
+
+    A laptop entering Modern Standby freezes the solvers and the deadline
+    timers, which inflates elapsed times. Modern Standby starts when the
+    display turns off, so the display is kept on as well. This does not
+    prevent a sleep the user requests (for example, closing the lid);
+    suspended time is recorded per command so affected timings are visible.
+    """
+    ES_CONTINUOUS, ES_SYSTEM_REQUIRED, ES_DISPLAY_REQUIRED = 0x80000000, 0x00000001, 0x00000002
+
+    def __init__(self, enabled: bool = True):
+        self.enabled = enabled and os.name == "nt"
+
+    def __enter__(self):
+        if self.enabled:
+            import ctypes
+            ctypes.windll.kernel32.SetThreadExecutionState(
+                self.ES_CONTINUOUS | self.ES_SYSTEM_REQUIRED | self.ES_DISPLAY_REQUIRED)
+        return self
+
+    def __exit__(self, *exc):
+        if self.enabled:
+            import ctypes
+            ctypes.windll.kernel32.SetThreadExecutionState(self.ES_CONTINUOUS)
+        return False
 
 
 def digest(path: Path) -> str:
@@ -521,6 +561,7 @@ def run_command(run_dir: Path, generated: str, details: dict, *, original: Path,
                 "original_source_file": original_relative, "jar_sha256": digest(jar), "process_exit_code": None}
     save_json(run_dir / "execution.json", metadata)
     start = time.monotonic()
+    awake_start = awake_seconds()
     run_alloy(metadata["argv"], run_dir, metadata, timeout)
     if external and metadata["status"] == "completed" and metadata["process_exit_code"] == 0:
         metadata["translation_seconds"] = metadata["alloy_seconds"]
@@ -542,9 +583,21 @@ def run_command(run_dir: Path, generated: str, details: dict, *, original: Path,
                                 process_exit_code=None)
                 run_alloy(metadata["argv"], run_dir, metadata, max(timeout - (time.monotonic() - start), 1))
     metadata.update(elapsed_seconds=round(time.monotonic() - start, 3), finished_at=now())
+    awake_end = awake_seconds()
+    if awake_start is not None and awake_end is not None:
+        # Elapsed time that the host spent asleep. Outcomes stay valid, but the
+        # timing (and the deadline) of a run with suspended time is not reliable.
+        metadata["host_suspended_seconds"] = round(max(0.0, metadata["elapsed_seconds"] -
+                                                       (awake_end - awake_start)), 1)
     metadata["validation"] = validate(run_dir, metadata)
     save_json(run_dir / "execution.json", metadata)
     return metadata
+
+
+def seconds_label(run: dict) -> str:
+    suspended = run.get("host_suspended_seconds") or 0
+    text = f"{run['elapsed_seconds']:.3f}" if isinstance(run.get("elapsed_seconds"), (int, float)) else "?"
+    return f"{text} (host asleep {suspended:.0f} s)" if suspended >= 5 else text
 
 
 def solver_label(run: dict) -> str:
@@ -580,7 +633,7 @@ def summarize(suite: Path, metadata: dict):
     for r in runs:
         v = r["validation"]
         lines.append(f"| {r['points_bound']} | {r['sequence_bound']} | {r['integer_bitwidth']} | {r['command']} | "
-                     f"{solver_label(r)} | {r['expected']} | {v['observed'] or 'UNKNOWN'} | {r['status']} | {r['elapsed_seconds']} | "
+                     f"{solver_label(r)} | {r['expected']} | {v['observed'] or 'UNKNOWN'} | {r['status']} | {seconds_label(r)} | "
                      f"{'yes' if v['validated'] else 'no'} |")
     lines += ["", "Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.", ""]
     verify.write_text(suite / "summary.md", "\n".join(lines))
@@ -604,6 +657,10 @@ def main(argv=None) -> int:
     parser.add_argument("--sat-bin", help="Directory of external solver binaries (inside WSL when not on PATH)")
     parser.add_argument("--proof", action="store_true", help="Ask the external solver for a DRAT proof and check it with drat-trim")
     parser.add_argument("--keep-cnf", action="store_true", help="Retain exported CNF files (they can be large)")
+    parser.add_argument("--jobs", type=int, default=1,
+                        help="Commands to run concurrently (each is a separate Java process)")
+    parser.add_argument("--allow-sleep", action="store_true",
+                        help="Do not keep Windows (and its display) awake while the suite runs")
     parser.add_argument("--output", type=Path, default=ROOT / "scale-results")
     parser.add_argument("--dry-run", action="store_true", help="Generate sources and plan without running Java")
     args = parser.parse_args(argv)
@@ -637,6 +694,9 @@ def main(argv=None) -> int:
                   "fallback_solver": args.fallback_solver, "proof": args.proof,
                   "timeout_seconds": args.timeout, "jvm_heap_cap_mb": args.heap_mb, "runs": []}
     print(f"Scaling suite: {suite}", flush=True)
+    keep_awake = KeepAwake(enabled=not args.allow_sleep and not args.dry_run)
+    keep_awake.__enter__()
+    plan = []
     for points in args.points:
         for name in selected:
             generated, details = generate(source, name, points, args.messages,
@@ -648,19 +708,42 @@ def main(argv=None) -> int:
                 save_json(target / "plan.json", details)
                 print(details["command_source"], flush=True)
                 continue
-            result = run_command(target, generated, details, original=original, java=java, jar=JAR,
-                                 solver=args.solver, timeout=args.timeout, heap_mb=args.heap_mb,
-                                 sat_bin=args.sat_bin, proof=args.proof, keep_cnf=args.keep_cnf,
-                                 fallback_solver=args.fallback_solver)
-            suite_meta["runs"].append(result)
-            summarize(suite, suite_meta)
+            plan.append((points, name, target, generated, details))
+
+    import threading
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    lock = threading.Lock()
+
+    def execute(item):
+        points, name, target, generated, details = item
+        return points, name, run_command(
+            target, generated, details, original=original, java=java, jar=JAR,
+            solver=args.solver, timeout=args.timeout, heap_mb=args.heap_mb,
+            sat_bin=args.sat_bin, proof=args.proof, keep_cnf=args.keep_cnf,
+            fallback_solver=args.fallback_solver)
+
+    # Each command is an independent Java (and solver) process; --jobs runs
+    # several at once. Concurrent runs share CPU and memory, so their elapsed
+    # times are wall-clock records, not isolated performance measurements.
+    interrupted = False
+    with ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
+        futures = [pool.submit(execute, item) for item in plan]
+        for future in as_completed(futures):
+            points, name, result = future.result()
+            with lock:
+                suite_meta["runs"].append(result)
+                summarize(suite, suite_meta)
             print(f"{points:4} SPC {name} [{solver_label(result)}]: {result['status']}, "
                   f"{result['validation']['observed'] or 'UNKNOWN'}, {result['elapsed_seconds']}s, "
                   f"validated={result['validation']['validated']}", flush=True)
-            if result["status"] == "interrupted":
-                suite_meta["finished_at"] = now()
-                summarize(suite, suite_meta)
-                return 130
+            interrupted = interrupted or result["status"] == "interrupted"
+    suite_meta["concurrent_jobs"] = max(1, args.jobs)
+    suite_meta["runs"].sort(key=lambda r: (r["points_bound"], selected.index(r["command"])))
+    keep_awake.__exit__(None, None, None)
+    if interrupted:
+        suite_meta["finished_at"] = now()
+        summarize(suite, suite_meta)
+        return 130
     suite_meta.update(finished_at=now(), dry_run=args.dry_run)
     summarize(suite, suite_meta)
     print(f"Summary: {suite / 'summary.md'}", flush=True)

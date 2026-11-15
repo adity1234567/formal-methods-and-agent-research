@@ -22,3 +22,8 @@ venv/
 Thumbs.db
 .idea/
 .vscode/
+
+# Transient SAT artefacts: CNF exports and DRAT proofs can be very large.
+# Their hashes and verification results are recorded in execution.json.
+/telecommunications_protocol/scale-results/**/*.cnf
+/telecommunications_protocol/scale-results/**/*.drat

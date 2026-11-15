@@ -276,3 +276,76 @@ Sources: [scaling design](../../telecommunications_protocol/scaling_design.md),
 [validated coverage and raw evidence](../../telecommunications_protocol/results/scaling_summary.md),
 [benchmark runner](../../telecommunications_protocol/scale_verify.py), and
 [correspondence runner](../../telecommunications_protocol/check_correspondence.py).
+
+## 16. Raising Alloy's capacity, 15 November 2026
+
+The 8 November runs left two limits. Some 1,000-point models failed with
+"translation capacity exceeded" before any solving, and property checks with
+four-entry histories stopped completing above eight points. A further encoding,
+[`telecommunications_slots.als`](../../telecommunications_protocol/telecommunications_slots.als),
+attacks the causes rather than the time limit:
+
+- **Arity.** Alloy's engine numbers every possible tuple of a relation with a
+  32-bit integer, so a relation of arity k over U atoms needs U^k below about
+  2.1 billion. Each history position is now its own field of arity two, which
+  allows universes of about 46,000 atoms.
+- **Arithmetic.** Lengths, prepending, concatenation and buffer offsets became
+  shifts between five constant slot atoms, so the SAT problem contains no
+  integer adder or counting circuits.
+- **Route navigation.** First, last and next active points were computed with
+  minimums over transitive closures, which grows roughly with the cube of the
+  network size. They are now defined by a linear recursion along the fixed pool
+  order. A definitional fact fixes these derived fields uniquely from the route
+  and histories, so it assumes nothing about validity.
+
+A bounded correspondence harness compares the new encoding with the reference
+model (all 12 comparison commands matched), and two deliberately broken copies
+of the encoding were caught by it. With these changes, a 1,000-point check now
+translates. In a development measurement, `DaemonPreservesInvariant` at 1,000
+points produced 16.0 million variables and 34.7 million clauses in about nine
+minutes. Solving a problem of that size did not fit in the 4 GB available to
+the external solver on this machine, so 1,000-point property coverage remains
+UNKNOWN.
+
+The runner can now hand checks to external solvers. Alloy exports the problem
+as CNF; Kissat or CaDiCaL decides it; and with `--proof`, the independent
+checker drat-trim verifies a DRAT proof of the UNSAT answer. Two safeguards
+apply: Alloy writes an empty (and therefore satisfiable) CNF when it decides a
+formula during translation, so empty CNFs are never interpreted; and witnesses
+always use Alloy's own solver so their instances can be inspected. Measured
+results, including which solver decided each check and any time the laptop
+spent in standby, are in the
+[scaling report](../../telecommunications_protocol/results/scaling_summary.md).
+
+## 17. Safety without bounds
+
+Bigger scopes cannot by themselves cover every network. The protocol's structure
+offers a better route. The invariant is a conjunction of local terms: each
+section conserves its messages, and adjacent sections agree on their shared
+boundary. Each operation changes at most two adjacent sections (or adds one),
+and its frame conditions keep everything else unchanged. So a counterexample on
+a route of any length can be cut down to a window of at most four adjacent
+sections. The retrieve equation `input = inFlight ++ output` follows by
+induction along the route.
+
+[`unbounded_check.py`](../../telecommunications_protocol/unbounded_check.py)
+states each window obligation in Z3's theory of sequences, which covers histories
+of any length and any number of message values. It proves preservation and the
+external effect (or invisibility) of every operation, initial validity, and the
+base and step of the retrieve induction. It also finds the counterexample for
+the newest-first receive mutation and satisfies two witnesses, so the premises
+are not contradictory. See the
+[unbounded results](../../telecommunications_protocol/results/unbounded_summary.md)
+and the [argument](../../telecommunications_protocol/scaling_design.md#unbounded-argument).
+
+The two kinds of evidence support each other. Alloy checks the actual
+predicates, but only within bounds; the locality lemma shows that four sections
+suffice for network size, and completed Alloy checks exceed that. Z3 removes the
+history bound, but its encoding is a hand translation and the lemma is a paper
+argument. Eventual delivery is still not established: it needs a fairness
+assumption and a decreasing measure, described in the same argument.
+
+Sources: [scaling design](../../telecommunications_protocol/scaling_design.md),
+[slot correspondence harness](../../telecommunications_protocol/scaling_slots_correspondence.als),
+[benchmark runner](../../telecommunications_protocol/scale_verify.py), and
+[solver setup](../../telecommunications_protocol/tools/README.md).

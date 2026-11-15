@@ -8,10 +8,12 @@ Scopes bound available SPC atoms. Only the separately named exact-route witnesse
 
 Representation: `sequence`. In sequence mode the route and histories share a sequence bound. Ordered mode uses the selected independent history bound. All results remain finite-scope evidence.
 
-| SPC bound | seq | Int bits | Command | Expected | Observed | Status | Seconds | Validated |
-|---|---|---|---|---|---|---|---|---|
-| 6 | 6 | 7 | DaemonPreservesInvariant | UNSAT | UNKNOWN | timed_out | 30.044 | no |
-| 6 | 6 | 7 | RetrieveIsValid | UNSAT | UNKNOWN | timed_out | 30.035 | no |
-| 6 | 6 | 7 | ShowExactRouteWithTraffic | SAT | SAT | completed | 2.375 | yes |
+External SAT solvers (Kissat, CaDiCaL) decide only UNSAT-expected checks from Alloy's CNF export. Witnesses and the expected bug use a built-in Alloy solver so their instances can be validated.
+
+| SPC bound | seq | Int bits | Command | Solver | Expected | Observed | Status | Seconds | Validated |
+|---|---|---|---|---|---|---|---|---|---|
+| 6 | 6 | 7 | DaemonPreservesInvariant | glucose | UNSAT | UNKNOWN | timed_out | 30.044 | no |
+| 6 | 6 | 7 | RetrieveIsValid | glucose | UNSAT | UNKNOWN | timed_out | 30.035 | no |
+| 6 | 6 | 7 | ShowExactRouteWithTraffic | glucose | SAT | SAT | completed | 2.375 | yes |
 
 Per-command directories retain generated sources, execution metadata, raw logs and all available Analyzer evidence.
